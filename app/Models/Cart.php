@@ -25,8 +25,29 @@ class Cart extends Model
 
     public function getTotal()
     {
-        return $this->products->sum(function ($product) {
-            return $product->pivot->price * $product->pivot->quantity;
-        });
+        // If the caller already eager-loaded products (e.g. CartController::show()
+        // iterating them for display), reuse that in-memory collection for free.
+        if ($this->relationLoaded('products')) {
+            return $this->products->sum(function ($product) {
+                return $product->pivot->price * $product->pivot->quantity;
+            });
+        }
+
+        // Otherwise, don't hydrate every full Product row just to sum two
+        // pivot columns — aggregate it in the database instead.
+        return (float) $this->products()
+            ->selectRaw('SUM(cart_product.price * cart_product.quantity) as total')
+            ->value('total') ?? 0.0;
+    }
+
+    public function getItemCount()
+    {
+        if ($this->relationLoaded('products')) {
+            return $this->products->sum(function ($product) {
+                return $product->pivot->quantity;
+            });
+        }
+
+        return (int) $this->products()->sum('cart_product.quantity');
     }
 }

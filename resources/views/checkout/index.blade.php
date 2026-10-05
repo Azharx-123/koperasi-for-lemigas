@@ -1,281 +1,10 @@
 @extends('layouts.app')
 
 @push('styles')
-    <style>
-        :root {
-            --yellow-primary: 255, 215, 0;
-            --yellow-light: 255, 229, 92;
-            --yellow-dark: 178, 151, 0;
-            --gray-100: 248, 249, 250;
-            --gray-200: 233, 236, 239;
-            --gray-300: 222, 226, 230;
-            --gray-600: 108, 117, 125;
-            --gray-800: 52, 58, 64;
-            --black: 33, 37, 41;
-        }
-
-        /* Elegant Separator Style */
-        .elegant-separator {
-            height: 3px;
-            background: linear-gradient(90deg, transparent 0%, rgb(var(--yellow-primary)) 50%, transparent 100%);
-            width: 150px;
-            margin: 2rem auto;
-        }
-
-        /* Section Styles */
-        .section-title-elegant {
-            font-family: 'Poppins', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 600;
-            color: rgb(var(--black));
-            margin-bottom: 1rem;
-            position: relative;
-            text-align: center;
-        }
-
-        /* Checkout Card Styles */
-        .checkout-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-            margin-bottom: 2rem;
-        }
-
-        .checkout-card-header {
-            background-color: rgb(var(--gray-100));
-            padding: 1.5rem;
-            border-bottom: 1px solid rgb(var(--gray-200));
-        }
-
-        .checkout-card-title {
-            font-family: 'Poppins', sans-serif;
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0;
-            color: rgb(var(--gray-800));
-        }
-
-        .checkout-card-body {
-            padding: 2rem;
-        }
-
-        /* Order Summary Styles */
-        .order-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid rgb(var(--gray-200));
-        }
-
-        .order-item:last-child {
-            border-bottom: none;
-        }
-
-        .order-item-image {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 10px;
-            margin-right: 1.5rem;
-        }
-
-        .order-item-details {
-            flex-grow: 1;
-        }
-
-        .order-item-name {
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .order-item-price {
-            color: rgb(var(--gray-600));
-            font-size: 0.9rem;
-        }
-
-        .order-item-quantity {
-            background-color: rgb(var(--yellow-primary));
-            padding: 0.3rem 0.8rem;
-            border-radius: 50px;
-            font-size: 0.9rem;
-            margin: 0.5rem 0.5rem 0 0.5rem;
-            text-align: center;
-        }
-
-        .order-item-total {
-            font-weight: 600;
-            color: rgb(var(--yellow-dark));
-            font-size: 1.1rem;
-            margin-left: 1rem;
-        }
-
-        /* Order Summary Totals */
-        .order-summary-line {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-        }
-
-        .order-summary-label {
-            font-weight: 500;
-            color: rgb(var(--gray-600));
-        }
-
-        .order-summary-value {
-            font-weight: 600;
-        }
-
-        .order-total {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: rgb(var(--yellow-dark));
-        }
-
-        /* Form Styles */
-        .form-label {
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            color: rgb(var(--gray-800));
-        }
-
-        .form-control {
-            border-radius: 10px;
-            padding: 0.75rem 1rem;
-            border: 1px solid rgb(var(--gray-300));
-            transition: all 0.3s ease;
-        }
-
-        .form-control:focus {
-            box-shadow: 0 0 0 3px rgba(var(--yellow-primary), 0.25);
-            border-color: rgb(var(--yellow-primary));
-        }
-
-        .form-section {
-            margin-bottom: 2rem;
-        }
-
-        /* Payment Method Styles */
-        .payment-method-selector {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .payment-method-item {
-            flex: 1;
-            min-width: 120px;
-        }
-
-        .payment-method-radio {
-            display: none;
-        }
-
-        .payment-method-label {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 1.5rem 1rem;
-            border: 2px solid rgb(var(--gray-200));
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .payment-method-radio:checked+.payment-method-label {
-            border-color: rgb(var(--yellow-primary));
-            background-color: rgba(var(--yellow-primary), 0.05);
-        }
-
-        .payment-icon {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            color: rgb(var(--gray-600));
-        }
-
-        .payment-method-radio:checked+.payment-method-label .payment-icon {
-            color: rgb(var(--yellow-dark));
-        }
-
-        .payment-label-text {
-            font-weight: 500;
-            text-align: center;
-        }
-
-        /* Button Styles */
-        .btn-checkout {
-            display: inline-block;
-            padding: 1rem 2rem;
-            background: linear-gradient(45deg, rgb(var(--yellow-dark)), rgb(var(--yellow-primary)));
-            color: white;
-            font-weight: 600;
-            font-size: 1.1rem;
-            border-radius: 50px;
-            border: none;
-            box-shadow: 0 4px 15px rgba(var(--yellow-primary), 0.3);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            width: 100%;
-        }
-
-        .btn-checkout:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(var(--yellow-primary), 0.4);
-            color: white;
-        }
-
-        .btn-back {
-            display: inline-flex;
-            align-items: center;
-            padding: 1rem 2rem;
-            background-color: white;
-            color: rgb(var(--gray-800));
-            border: 2px solid rgb(var(--gray-300));
-            font-weight: 600;
-            font-size: 1.1rem;
-            border-radius: 50px;
-            transition: all 0.3s ease;
-            text-decoration: none;
-        }
-
-        .btn-back:hover {
-            background-color: rgb(var(--gray-100));
-            color: rgb(var(--gray-800));
-        }
-
-        /* Responsive Styles */
-        @media (max-width: 768px) {
-            .section-title-elegant {
-                font-size: 2rem;
-            }
-
-            .order-item {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .order-item-image {
-                margin-bottom: 1rem;
-                margin-right: 0;
-            }
-
-            .order-item-total {
-                margin-left: 0;
-                margin-top: 0.5rem;
-            }
-
-            .checkout-card-body {
-                padding: 1.5rem;
-            }
-
-            .payment-method-item {
-                min-width: 100%;
-            }
-        }
-    </style>
+    @vite('resources/css/pages/checkout-index.css')
 @endpush
+
+@section('title', 'Checkout')
 
 @section('content')
     <div class="container py-5">
@@ -287,6 +16,18 @@
                 {{ session('error') }}
             </div>
         @endif
+
+        {{-- #10: banner kecil buat tamu (checkout tanpa akun tetap didukung
+             penuh) — ini cuma ajakan opsional, bukan penghalang. --}}
+        @guest
+            <div class="alert alert-info checkout-guest-banner">
+                <span>
+                    <i class="fas fa-info-circle me-2"></i>Sudah punya akun? Masuk supaya alamat pengiriman bisa
+                    terisi otomatis dan pesanan tercatat di riwayat akun Anda.
+                </span>
+                <a href="{{ route('login') }}" class="btn btn-sm btn-outline-primary">Masuk</a>
+            </div>
+        @endguest
 
         <form action="{{ route('checkout.process') }}" method="POST">
             @csrf
@@ -301,24 +42,49 @@
                             </h3>
                         </div>
                         <div class="checkout-card-body">
+                            {{-- #11: kalau user login & punya data profil tersimpan, tawarkan
+                                 checkbox buat isi otomatis dari situ. Kalau login tapi belum
+                                 pernah isi profil, kasih hint kecil ke halaman profil (bukan
+                                 dipaksa). Tamu tidak lihat salah satu dari ini — banner ajakan
+                                 login di atas sudah cukup. --}}
+                            @auth
+                                @if ($profile)
+                                    <div class="form-check use-profile-toggle mb-4">
+                                        <input class="form-check-input" type="checkbox" id="use-profile-data"
+                                            checked>
+                                        <label class="form-check-label" for="use-profile-data">
+                                            Gunakan data profil saya
+                                        </label>
+                                    </div>
+                                @else
+                                    <p class="text-muted small mb-4 profile-hint">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Simpan alamat pengiriman di <a href="{{ route('profile.edit') }}">profil
+                                            Anda</a> supaya form ini terisi otomatis lain kali.
+                                    </p>
+                                @endif
+                            @endauth
+
                             <div class="row">
                                 <div class="col-md-6 form-section">
                                     <label for="name" class="form-label">Nama Lengkap</label>
                                     <input type="text" class="form-control" id="name" name="name"
-                                        value="{{ auth()->user()->name ?? '' }}" required>
+                                        value="{{ old('name', auth()->user()->name ?? '') }}" required>
                                 </div>
                                 <div class="col-md-6 form-section">
                                     <label for="email" class="form-label">Email</label>
                                     <input type="email" class="form-control" id="email" name="email"
-                                        value="{{ auth()->user()->email ?? '' }}" required>
+                                        value="{{ old('email', auth()->user()->email ?? '') }}" required>
                                 </div>
                                 <div class="col-md-6 form-section">
                                     <label for="phone" class="form-label">Nomor Telepon</label>
-                                    <input type="tel" class="form-control" id="phone" name="phone" required>
+                                    <input type="tel" class="form-control" id="phone" name="phone"
+                                        value="{{ old('phone', $profile['phone'] ?? '') }}" required>
                                 </div>
                                 <div class="col-md-6 form-section">
                                     <label for="company" class="form-label">Perusahaan (Opsional)</label>
-                                    <input type="text" class="form-control" id="company" name="company">
+                                    <input type="text" class="form-control" id="company" name="company"
+                                        value="{{ old('company', $profile['company'] ?? '') }}">
                                 </div>
                             </div>
                         </div>
@@ -334,39 +100,51 @@
                         <div class="checkout-card-body">
                             <div class="form-section">
                                 <label for="address" class="form-label">Alamat Lengkap</label>
-                                <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                                <textarea class="form-control" id="address" name="address" rows="3" required>{{ old('address', $profile['address'] ?? '') }}</textarea>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 form-section">
                                     <label for="province" class="form-label">Provinsi</label>
+                                    @php $selectedProvince = old('province', $profile['province'] ?? ''); @endphp
                                     <select class="form-control" id="province" name="province" required>
                                         <option value="">Pilih Provinsi</option>
-                                        <option value="DKI Jakarta">DKI Jakarta</option>
-                                        <option value="Jawa Barat">Jawa Barat</option>
-                                        <option value="Jawa Tengah">Jawa Tengah</option>
-                                        <option value="Jawa Timur">Jawa Timur</option>
-                                        <!-- Add more provinces as needed -->
+                                        @foreach ([
+                                            'Aceh', 'Bali', 'Banten', 'Bengkulu', 'DI Yogyakarta', 'DKI Jakarta',
+                                            'Gorontalo', 'Jambi', 'Jawa Barat', 'Jawa Tengah', 'Jawa Timur',
+                                            'Kalimantan Barat', 'Kalimantan Selatan', 'Kalimantan Tengah',
+                                            'Kalimantan Timur', 'Kalimantan Utara', 'Kepulauan Bangka Belitung',
+                                            'Kepulauan Riau', 'Lampung', 'Maluku', 'Maluku Utara',
+                                            'Nusa Tenggara Barat', 'Nusa Tenggara Timur', 'Papua',
+                                            'Papua Barat', 'Papua Barat Daya', 'Papua Pegunungan',
+                                            'Papua Selatan', 'Papua Tengah', 'Riau', 'Sulawesi Barat',
+                                            'Sulawesi Selatan', 'Sulawesi Tengah', 'Sulawesi Tenggara',
+                                            'Sulawesi Utara', 'Sumatera Barat', 'Sumatera Selatan',
+                                            'Sumatera Utara',
+                                        ] as $provinceName)
+                                            <option value="{{ $provinceName }}" @selected($selectedProvince === $provinceName)>{{ $provinceName }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="col-md-6 form-section">
                                     <label for="city" class="form-label">Kota/Kabupaten</label>
-                                    <select class="form-control" id="city" name="city" required>
-                                        <option value="">Pilih Kota/Kabupaten</option>
-                                        <!-- Cities will be loaded dynamically based on province -->
-                                    </select>
+                                    <input type="text" class="form-control" id="city" name="city"
+                                        value="{{ old('city', $profile['city'] ?? '') }}"
+                                        placeholder="Contoh: Kota Bandung" required>
                                 </div>
                                 <div class="col-md-6 form-section">
                                     <label for="district" class="form-label">Kecamatan</label>
-                                    <input type="text" class="form-control" id="district" name="district" required>
+                                    <input type="text" class="form-control" id="district" name="district"
+                                        value="{{ old('district', $profile['district'] ?? '') }}" required>
                                 </div>
                                 <div class="col-md-6 form-section">
                                     <label for="postal_code" class="form-label">Kode Pos</label>
-                                    <input type="text" class="form-control" id="postal_code" name="postal_code" required>
+                                    <input type="text" class="form-control" id="postal_code" name="postal_code"
+                                        value="{{ old('postal_code', $profile['postal_code'] ?? '') }}" required>
                                 </div>
                             </div>
                             <div class="form-section">
                                 <label for="shipping_notes" class="form-label">Catatan Pengiriman (Opsional)</label>
-                                <textarea class="form-control" id="shipping_notes" name="shipping_notes" rows="2"></textarea>
+                                <textarea class="form-control" id="shipping_notes" name="shipping_notes" rows="2">{{ old('shipping_notes') }}</textarea>
                             </div>
                         </div>
                     </div>
@@ -379,88 +157,167 @@
                             </h3>
                         </div>
                         <div class="checkout-card-body">
-                            <div class="payment-method-selector">
-                                <div class="payment-method-item">
-                                    <input type="radio" class="payment-method-radio" id="payment_bank_transfer"
-                                        name="payment_method" value="bank_transfer" checked>
-                                    <label for="payment_bank_transfer" class="payment-method-label">
-                                        <i class="fas fa-university payment-icon"></i>
-                                        <span class="payment-label-text">Transfer Bank</span>
-                                    </label>
-                                </div>
-                                <div class="payment-method-item">
-                                    <input type="radio" class="payment-method-radio" id="payment_credit_card"
-                                        name="payment_method" value="credit_card">
-                                    <label for="payment_credit_card" class="payment-method-label">
-                                        <i class="fas fa-credit-card payment-icon"></i>
-                                        <span class="payment-label-text">Kartu Kredit</span>
-                                    </label>
-                                </div>
-                                <div class="payment-method-item">
-                                    <input type="radio" class="payment-method-radio" id="payment_ewallet"
-                                        name="payment_method" value="ewallet">
-                                    <label for="payment_ewallet" class="payment-method-label">
-                                        <i class="fas fa-wallet payment-icon"></i>
-                                        <span class="payment-label-text">E-Wallet</span>
-                                    </label>
-                                </div>
+                            {{-- #12: QRIS & E-Wallet ditambahkan sebagai simulasi (lihat
+                                 CheckoutController::process()) — keduanya langsung tercatat
+                                 lunas begitu pesanan dibuat, tidak ada payment gateway
+                                 sungguhan yang terpasang. Kartu Kredit sengaja tidak
+                                 ditawarkan (lihat catatan di Order::PAYMENT_METHODS). --}}
+                            @php $selectedPaymentMethod = old('payment_method', 'bank_transfer'); @endphp
+                            <div class="payment-method-options">
+                                <label class="payment-method-option" for="payment-bank_transfer">
+                                    <input type="radio" name="payment_method" id="payment-bank_transfer"
+                                        value="bank_transfer"
+                                        {{ $selectedPaymentMethod === 'bank_transfer' ? 'checked' : '' }}>
+                                    <span class="payment-method-option-label">
+                                        <i class="fas fa-university me-1"></i> Transfer Bank
+                                    </span>
+                                </label>
+                                <label class="payment-method-option" for="payment-qris">
+                                    <input type="radio" name="payment_method" id="payment-qris" value="qris"
+                                        {{ $selectedPaymentMethod === 'qris' ? 'checked' : '' }}>
+                                    <span class="payment-method-option-label">
+                                        <i class="fas fa-qrcode me-1"></i> QRIS
+                                    </span>
+                                </label>
+                                <label class="payment-method-option" for="payment-ewallet">
+                                    <input type="radio" name="payment_method" id="payment-ewallet" value="ewallet"
+                                        {{ $selectedPaymentMethod === 'ewallet' ? 'checked' : '' }}>
+                                    <span class="payment-method-option-label">
+                                        <i class="fas fa-wallet me-1"></i> E-Wallet
+                                    </span>
+                                </label>
                             </div>
 
-                            <!-- Bank Transfer Details (shown by default) -->
-                            <div id="bank_transfer_details" class="payment-details mt-4">
-                                <div class="alert alert-info">
-                                    <h5 class="alert-heading">Instruksi Pembayaran:</h5>
+                            <div class="payment-method-details" id="payment-details-bank_transfer"
+                                style="{{ $selectedPaymentMethod === 'bank_transfer' ? '' : 'display: none;' }}">
+                                <div class="alert alert-info mb-0">
+                                    <h5 class="alert-heading"><i class="fas fa-university me-2"></i>Transfer Bank
+                                    </h5>
                                     <p>Silakan transfer ke rekening berikut:</p>
-                                    <p><strong>Bank Mandiri</strong><br>
-                                        No. Rekening: 1234567890<br>
-                                        Atas Nama: LEMIGAS</p>
-                                    <p>Konfirmasi pembayaran akan diproses dalam 1x24 jam kerja.</p>
+                                    <p><strong>{{ $company->bank_name }}</strong><br>
+                                        No. Rekening: {{ $company->bank_account_number }}<br>
+                                        Atas Nama: {{ $company->bank_account_holder }}</p>
+                                    <p class="mb-0">Konfirmasi pembayaran akan diproses dalam 1x24 jam kerja setelah
+                                        Anda mengunggah bukti transfer.</p>
                                 </div>
                             </div>
 
-                            <!-- Credit Card Details (hidden by default) -->
-                            <div id="credit_card_details" class="payment-details mt-4" style="display: none;">
-                                <div class="row">
-                                    <div class="col-12 form-section">
-                                        <label for="card_number" class="form-label">Nomor Kartu</label>
-                                        <input type="text" class="form-control" id="card_number" name="card_number"
-                                            placeholder="1234 5678 9012 3456">
+                            <div class="payment-method-details" id="payment-details-qris"
+                                style="{{ $selectedPaymentMethod === 'qris' ? '' : 'display: none;' }}">
+                                <div class="alert alert-info mb-0">
+                                    <h5 class="alert-heading"><i class="fas fa-qrcode me-2"></i>QRIS</h5>
+                                    <div class="qris-code-box">
+                                        <svg class="qris-simulation-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"
+                                role="img" aria-label="Kode QRIS simulasi (bukan kode QR sungguhan yang bisa dipindai)">
+                                <rect x="0" y="0" width="200" height="200" fill="#ffffff" rx="10"/>
+                            <rect x="24" y="24" width="56" height="56" fill="#1f2937"/>
+                            <rect x="32" y="32" width="40" height="40" fill="#ffffff"/>
+                            <rect x="40" y="40" width="24" height="24" fill="#1f2937"/>
+                            <rect x="120" y="24" width="56" height="56" fill="#1f2937"/>
+                            <rect x="128" y="32" width="40" height="40" fill="#ffffff"/>
+                            <rect x="136" y="40" width="24" height="24" fill="#1f2937"/>
+                            <rect x="24" y="120" width="56" height="56" fill="#1f2937"/>
+                            <rect x="32" y="128" width="40" height="40" fill="#ffffff"/>
+                            <rect x="40" y="136" width="24" height="24" fill="#1f2937"/>
+                            <rect x="88" y="72" width="8" height="8" fill="#1f2937"/>
+                            <rect x="104" y="72" width="8" height="8" fill="#1f2937"/>
+                            <rect x="72" y="88" width="8" height="8" fill="#1f2937"/>
+                            <rect x="72" y="104" width="8" height="8" fill="#1f2937"/>
+                            <rect x="24" y="96" width="8" height="8" fill="#1f2937"/>
+                            <rect x="24" y="104" width="8" height="8" fill="#1f2937"/>
+                            <rect x="40" y="96" width="8" height="8" fill="#1f2937"/>
+                            <rect x="48" y="88" width="8" height="8" fill="#1f2937"/>
+                            <rect x="48" y="96" width="8" height="8" fill="#1f2937"/>
+                            <rect x="56" y="88" width="8" height="8" fill="#1f2937"/>
+                            <rect x="64" y="88" width="8" height="8" fill="#1f2937"/>
+                            <rect x="64" y="96" width="8" height="8" fill="#1f2937"/>
+                            <rect x="64" y="104" width="8" height="8" fill="#1f2937"/>
+                            <rect x="72" y="96" width="8" height="8" fill="#1f2937"/>
+                            <rect x="80" y="104" width="8" height="8" fill="#1f2937"/>
+                            <rect x="88" y="48" width="8" height="8" fill="#1f2937"/>
+                            <rect x="88" y="64" width="8" height="8" fill="#1f2937"/>
+                            <rect x="88" y="104" width="8" height="8" fill="#1f2937"/>
+                            <rect x="88" y="112" width="8" height="8" fill="#1f2937"/>
+                            <rect x="88" y="144" width="8" height="8" fill="#1f2937"/>
+                            <rect x="88" y="160" width="8" height="8" fill="#1f2937"/>
+                            <rect x="88" y="168" width="8" height="8" fill="#1f2937"/>
+                            <rect x="96" y="32" width="8" height="8" fill="#1f2937"/>
+                            <rect x="96" y="40" width="8" height="8" fill="#1f2937"/>
+                            <rect x="96" y="56" width="8" height="8" fill="#1f2937"/>
+                            <rect x="96" y="72" width="8" height="8" fill="#1f2937"/>
+                            <rect x="96" y="104" width="8" height="8" fill="#1f2937"/>
+                            <rect x="96" y="112" width="8" height="8" fill="#1f2937"/>
+                            <rect x="96" y="120" width="8" height="8" fill="#1f2937"/>
+                            <rect x="96" y="128" width="8" height="8" fill="#1f2937"/>
+                            <rect x="96" y="144" width="8" height="8" fill="#1f2937"/>
+                            <rect x="96" y="152" width="8" height="8" fill="#1f2937"/>
+                            <rect x="96" y="168" width="8" height="8" fill="#1f2937"/>
+                            <rect x="104" y="32" width="8" height="8" fill="#1f2937"/>
+                            <rect x="104" y="40" width="8" height="8" fill="#1f2937"/>
+                            <rect x="104" y="48" width="8" height="8" fill="#1f2937"/>
+                            <rect x="104" y="56" width="8" height="8" fill="#1f2937"/>
+                            <rect x="104" y="120" width="8" height="8" fill="#1f2937"/>
+                            <rect x="104" y="144" width="8" height="8" fill="#1f2937"/>
+                            <rect x="104" y="152" width="8" height="8" fill="#1f2937"/>
+                            <rect x="104" y="160" width="8" height="8" fill="#1f2937"/>
+                            <rect x="104" y="168" width="8" height="8" fill="#1f2937"/>
+                            <rect x="112" y="88" width="8" height="8" fill="#1f2937"/>
+                            <rect x="112" y="144" width="8" height="8" fill="#1f2937"/>
+                            <rect x="112" y="168" width="8" height="8" fill="#1f2937"/>
+                            <rect x="120" y="96" width="8" height="8" fill="#1f2937"/>
+                            <rect x="120" y="104" width="8" height="8" fill="#1f2937"/>
+                            <rect x="120" y="136" width="8" height="8" fill="#1f2937"/>
+                            <rect x="120" y="144" width="8" height="8" fill="#1f2937"/>
+                            <rect x="120" y="152" width="8" height="8" fill="#1f2937"/>
+                            <rect x="120" y="160" width="8" height="8" fill="#1f2937"/>
+                            <rect x="120" y="168" width="8" height="8" fill="#1f2937"/>
+                            <rect x="128" y="88" width="8" height="8" fill="#1f2937"/>
+                            <rect x="128" y="104" width="8" height="8" fill="#1f2937"/>
+                            <rect x="128" y="128" width="8" height="8" fill="#1f2937"/>
+                            <rect x="128" y="144" width="8" height="8" fill="#1f2937"/>
+                            <rect x="128" y="152" width="8" height="8" fill="#1f2937"/>
+                            <rect x="128" y="160" width="8" height="8" fill="#1f2937"/>
+                            <rect x="128" y="168" width="8" height="8" fill="#1f2937"/>
+                            <rect x="136" y="88" width="8" height="8" fill="#1f2937"/>
+                            <rect x="136" y="96" width="8" height="8" fill="#1f2937"/>
+                            <rect x="136" y="136" width="8" height="8" fill="#1f2937"/>
+                            <rect x="136" y="168" width="8" height="8" fill="#1f2937"/>
+                            <rect x="144" y="96" width="8" height="8" fill="#1f2937"/>
+                            <rect x="144" y="144" width="8" height="8" fill="#1f2937"/>
+                            <rect x="144" y="152" width="8" height="8" fill="#1f2937"/>
+                            <rect x="152" y="96" width="8" height="8" fill="#1f2937"/>
+                            <rect x="152" y="104" width="8" height="8" fill="#1f2937"/>
+                            <rect x="152" y="112" width="8" height="8" fill="#1f2937"/>
+                            <rect x="152" y="144" width="8" height="8" fill="#1f2937"/>
+                            <rect x="152" y="152" width="8" height="8" fill="#1f2937"/>
+                            <rect x="152" y="160" width="8" height="8" fill="#1f2937"/>
+                            <rect x="160" y="88" width="8" height="8" fill="#1f2937"/>
+                            <rect x="160" y="104" width="8" height="8" fill="#1f2937"/>
+                            <rect x="160" y="144" width="8" height="8" fill="#1f2937"/>
+                            <rect x="168" y="88" width="8" height="8" fill="#1f2937"/>
+                            <rect x="168" y="96" width="8" height="8" fill="#1f2937"/>
+                            <rect x="168" y="104" width="8" height="8" fill="#1f2937"/>
+                            <rect x="168" y="120" width="8" height="8" fill="#1f2937"/>
+                            <rect x="168" y="128" width="8" height="8" fill="#1f2937"/>
+                            <rect x="168" y="136" width="8" height="8" fill="#1f2937"/>
+                            <rect x="168" y="144" width="8" height="8" fill="#1f2937"/>
+                            <rect x="168" y="168" width="8" height="8" fill="#1f2937"/>
+                            </svg>
+                                        <span class="qris-simulation-label">(Simulasi — bukan kode QR sungguhan)</span>
                                     </div>
-                                    <div class="col-md-6 form-section">
-                                        <label for="card_expiry" class="form-label">Tanggal Kadaluarsa</label>
-                                        <input type="text" class="form-control" id="card_expiry" name="card_expiry"
-                                            placeholder="MM/YY">
-                                    </div>
-                                    <div class="col-md-6 form-section">
-                                        <label for="card_cvv" class="form-label">CVV</label>
-                                        <input type="text" class="form-control" id="card_cvv" name="card_cvv"
-                                            placeholder="123">
-                                    </div>
-                                    <div class="col-12 form-section">
-                                        <label for="card_holder" class="form-label">Nama Pemegang Kartu</label>
-                                        <input type="text" class="form-control" id="card_holder" name="card_holder">
-                                    </div>
+                                    <p class="mb-0">Pembayaran QRIS pada demo ini disimulasikan <strong>langsung
+                                            lunas</strong> begitu pesanan dibuat — tidak ada pemindaian sungguhan
+                                        yang diperlukan.</p>
                                 </div>
                             </div>
 
-                            <!-- E-Wallet Details (hidden by default) -->
-                            <div id="ewallet_details" class="payment-details mt-4" style="display: none;">
-                                <div class="row">
-                                    <div class="col-12 form-section">
-                                        <label for="ewallet_type" class="form-label">Pilih E-Wallet</label>
-                                        <select class="form-control" id="ewallet_type" name="ewallet_type">
-                                            <option value="">Pilih E-Wallet</option>
-                                            <option value="gopay">GoPay</option>
-                                            <option value="ovo">OVO</option>
-                                            <option value="dana">DANA</option>
-                                            <option value="linkaja">LinkAja</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-12 form-section">
-                                        <label for="phone_number" class="form-label">Nomor Telepon Terdaftar</label>
-                                        <input type="tel" class="form-control" id="phone_number"
-                                            name="phone_number">
-                                    </div>
+                            <div class="payment-method-details" id="payment-details-ewallet"
+                                style="{{ $selectedPaymentMethod === 'ewallet' ? '' : 'display: none;' }}">
+                                <div class="alert alert-info mb-0">
+                                    <h5 class="alert-heading"><i class="fas fa-wallet me-2"></i>E-Wallet</h5>
+                                    <p class="mb-0">Pembayaran E-Wallet pada demo ini disimulasikan <strong>langsung
+                                            lunas</strong> begitu pesanan dibuat — tidak ada redirect ke aplikasi
+                                        e-wallet sungguhan.</p>
                                 </div>
                             </div>
                         </div>
@@ -480,17 +337,17 @@
                             <div class="order-items-list">
                                 @foreach ($cartItems as $id => $item)
                                     <div class="order-item">
-                                        <img src="{{ Storage::url($item['image']) }}" alt="{{ $item['name'] }}"
+                                        <img src="{{ \App\Helpers\ImageHelper::url($item['image']) }}" alt="{{ $item['name'] }}"
                                             class="order-item-image">
                                         <div class="order-item-details">
                                             <div class="order-item-name">{{ $item['name'] }}</div>
                                             <div class="order-item-price">
-                                                Rp {{ number_format($item['price'], 0, ',', '.') }}
+                                                {{ \App\Helpers\CurrencyHelper::formatRupiah($item['price']) }}
                                             </div>
                                             <div class="order-item-quantity">x{{ $item['quantity'] }}</div>
                                         </div>
                                         <div class="order-item-total">
-                                            Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}
+                                            {{ \App\Helpers\CurrencyHelper::formatRupiah($item['price'] * $item['quantity']) }}
                                         </div>
                                     </div>
                                 @endforeach
@@ -500,28 +357,28 @@
                             <div class="order-summary-calculations mt-4 pt-4 border-top">
                                 <div class="order-summary-line">
                                     <span class="order-summary-label">Subtotal</span>
-                                    <span class="order-summary-value">Rp {{ number_format($total, 0, ',', '.') }}</span>
+                                    <span class="order-summary-value">{{ \App\Helpers\CurrencyHelper::formatRupiah($total) }}</span>
                                 </div>
                                 <div class="order-summary-line">
                                     <span class="order-summary-label">Pengiriman</span>
-                                    <span class="order-summary-value">Rp
-                                        {{ number_format($shipping_fee ?? 0, 0, ',', '.') }}</span>
+                                    <span class="order-summary-value">
+                                        {{ \App\Helpers\CurrencyHelper::formatRupiah($shipping_fee ?? 0) }}</span>
                                 </div>
                                 <div class="order-summary-line">
                                     <span class="order-summary-label">Pajak (11%)</span>
-                                    <span class="order-summary-value">Rp
-                                        {{ number_format($tax ?? $total * 0.11, 0, ',', '.') }}</span>
+                                    <span class="order-summary-value">
+                                        {{ \App\Helpers\CurrencyHelper::formatRupiah($tax ?? $total * 0.11) }}</span>
                                 </div>
                                 <div class="order-summary-line mt-4 pt-3 border-top">
                                     <span class="order-summary-label order-total">Total</span>
-                                    <span class="order-summary-value order-total">Rp
-                                        {{ number_format($total + ($shipping_fee ?? 0) + ($tax ?? $total * 0.11), 0, ',', '.') }}</span>
+                                    <span class="order-summary-value order-total">
+                                        {{ \App\Helpers\CurrencyHelper::formatRupiah($total + ($shipping_fee ?? 0) + ($tax ?? $total * 0.11)) }}</span>
                                 </div>
                             </div>
 
                             <!-- Checkout Button -->
                             <div class="mt-4">
-                                <button type="submit" class="btn-checkout">
+                                <button type="submit" class="btn-cta btn-cta-lg btn-checkout">
                                     <i class="fas fa-check-circle me-2"></i>Proses Pesanan
                                 </button>
                                 <a href="{{ route('cart.show') }}" class="btn-back mt-3 w-100 justify-content-center">
@@ -539,85 +396,73 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Payment method selection
-            const paymentMethods = document.querySelectorAll('input[name="payment_method"]');
-            const bankTransferDetails = document.getElementById('bank_transfer_details');
-            const creditCardDetails = document.getElementById('credit_card_details');
-            const ewalletDetails = document.getElementById('ewallet_details');
-
-            paymentMethods.forEach(method => {
-                method.addEventListener('change', function() {
-                    // Hide all payment details sections
-                    bankTransferDetails.style.display = 'none';
-                    creditCardDetails.style.display = 'none';
-                    ewalletDetails.style.display = 'none';
-
-                    // Show the selected payment details section
-                    switch (this.value) {
-                        case 'bank_transfer':
-                            bankTransferDetails.style.display = 'block';
-                            break;
-                        case 'credit_card':
-                            creditCardDetails.style.display = 'block';
-                            break;
-                        case 'ewallet':
-                            ewalletDetails.style.display = 'block';
-                            break;
+            // Prevent double-submit: a slow connection or an impatient
+            // double click can otherwise fire two separate checkout
+            // requests for the same cart, creating two orders.
+            const checkoutForm = document.querySelector('form[action="{{ route('checkout.process') }}"]');
+            if (checkoutForm) {
+                checkoutForm.addEventListener('submit', function() {
+                    const submitBtn = checkoutForm.querySelector('.btn-checkout');
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Memproses...';
                     }
                 });
+            }
+        });
+    </script>
+
+    <script>
+        // #11: toggle isi/kosongkan field pengiriman dari data profil.
+        // profileData null kalau tamu ATAU user login yang belum simpan
+        // profil (lihat blok checkbox "Gunakan data profil saya" di atas)
+        // — JS di bawah no-op dengan aman di kedua kasus itu karena
+        // checkbox-nya juga tidak ada.
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileData = @json($profile);
+            const useProfileCheckbox = document.getElementById('use-profile-data');
+            const toggleFieldIds = ['phone', 'company', 'address', 'province', 'city', 'district', 'postal_code'];
+
+            if (useProfileCheckbox && profileData) {
+                useProfileCheckbox.addEventListener('change', function() {
+                    toggleFieldIds.forEach(function(fieldId) {
+                        const field = document.getElementById(fieldId);
+                        if (!field) return;
+                        field.value = useProfileCheckbox.checked ? (profileData[fieldId] || '') : '';
+                    });
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // #12: tampilkan blok info sesuai metode pembayaran yang dipilih.
+        // Tetap berfungsi tanpa JS: style awal tiap panel sudah dihitung di
+        // server (lihat $selectedPaymentMethod di atas), JS ini cuma
+        // menambahkan interaktivitas toggle saat pilihan diganti.
+        document.addEventListener('DOMContentLoaded', function() {
+            const paymentRadios = document.querySelectorAll('input[name="payment_method"]');
+            const detailPanels = document.querySelectorAll('.payment-method-details');
+            const optionLabels = document.querySelectorAll('.payment-method-option');
+
+            function updatePaymentDetails() {
+                const selected = document.querySelector('input[name="payment_method"]:checked');
+                if (!selected) return;
+
+                detailPanels.forEach(function(panel) {
+                    panel.style.display = panel.id === 'payment-details-' + selected.value ? 'block' : 'none';
+                });
+
+                optionLabels.forEach(function(option) {
+                    option.classList.toggle('selected', option.contains(selected));
+                });
+            }
+
+            paymentRadios.forEach(function(radio) {
+                radio.addEventListener('change', updatePaymentDetails);
             });
 
-            // Dynamic city selection based on province
-            const provinceSelect = document.getElementById('province');
-            const citySelect = document.getElementById('city');
-
-            provinceSelect.addEventListener('change', function() {
-                // Clear current options
-                citySelect.innerHTML = '<option value="">Pilih Kota/Kabupaten</option>';
-
-                // Add cities based on selected province
-                if (this.value === 'DKI Jakarta') {
-                    const jakartaCities = ['Jakarta Pusat', 'Jakarta Utara', 'Jakarta Barat',
-                        'Jakarta Selatan', 'Jakarta Timur', 'Kepulauan Seribu'
-                    ];
-                    jakartaCities.forEach(city => {
-                        const option = document.createElement('option');
-                        option.value = city;
-                        option.textContent = city;
-                        citySelect.appendChild(option);
-                    });
-                } else if (this.value === 'Jawa Barat') {
-                    const westJavaCities = ['Bandung', 'Bekasi', 'Bogor', 'Depok', 'Cimahi', 'Tasikmalaya',
-                        'Cirebon'
-                    ];
-                    westJavaCities.forEach(city => {
-                        const option = document.createElement('option');
-                        option.value = city;
-                        option.textContent = city;
-                        citySelect.appendChild(option);
-                    });
-                } else if (this.value === 'Jawa Tengah') {
-                    const centralJavaCities = ['Semarang', 'Solo', 'Magelang', 'Salatiga', 'Surakarta',
-                        'Pekalongan', 'Tegal'
-                    ];
-                    centralJavaCities.forEach(city => {
-                        const option = document.createElement('option');
-                        option.value = city;
-                        option.textContent = city;
-                        citySelect.appendChild(option);
-                    });
-                } else if (this.value === 'Jawa Timur') {
-                    const eastJavaCities = ['Surabaya', 'Malang', 'Kediri', 'Mojokerto', 'Madiun', 'Batu',
-                        'Blitar', 'Pasuruan'
-                    ];
-                    eastJavaCities.forEach(city => {
-                        const option = document.createElement('option');
-                        option.value = city;
-                        option.textContent = city;
-                        citySelect.appendChild(option);
-                    });
-                }
-            });
+            updatePaymentDetails();
         });
     </script>
 @endpush

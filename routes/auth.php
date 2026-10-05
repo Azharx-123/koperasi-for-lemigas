@@ -16,12 +16,19 @@ Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
 
-    Route::post('register', [RegisteredUserController::class, 'store']);
+    Route::post('register', [RegisteredUserController::class, 'store'])
+        ->middleware('throttle:6,1');
 
-    //Route::get('login', [AuthenticatedSessionController::class, 'create'])
-    //  ->name('login');
+    Route::get('login', [LoginController::class, 'showLoginForm'])
+        ->name('login');
 
-    //  Route::post('login', [AuthenticatedSessionController::class, 'store']);
+    // Was completely unthrottled: LoginController::login() has no lockout
+    // logic of its own (unlike Breeze's default LoginRequest), so without
+    // this an attacker could try passwords against one account with no
+    // rate limit at all. 6 attempts/minute matches the convention already
+    // used for the verification routes below.
+    Route::post('login', [LoginController::class, 'login'])
+        ->middleware('throttle:6,1');
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');

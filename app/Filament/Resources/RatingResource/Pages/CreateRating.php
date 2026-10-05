@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\RatingResource\Pages;
 
 use App\Filament\Resources\RatingResource;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateRating extends CreateRecord
@@ -26,11 +25,5 @@ class CreateRating extends CreateRecord
         }
 
         return $data;
-    }
-
-    protected function afterCreate(): void
-    {
-        // Refresh product rating cache
-        $this->record->product->refreshRatingCache();
     }
 }

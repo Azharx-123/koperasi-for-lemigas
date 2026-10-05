@@ -1,0 +1,8 @@
+<svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fictional sponsor logo created for this portfolio demo (no real brand). -->
+  <g transform="translate(14,20)">
+    <path d="M35,0 L14,38 L30,38 L20,70 L52,30 L34,30 Z" fill="#1E5FA8"/>
+  </g>
+  <text x="80" y="52" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="30" fill="#1B2A41" letter-spacing="1">NUSANTARA</text>
+  <text x="80" y="80" font-family="Arial, Helvetica, sans-serif" font-weight="500" font-size="22" fill="#1E5FA8" letter-spacing="4">ENERGI</text>
+</svg>

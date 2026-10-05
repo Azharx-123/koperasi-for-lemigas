@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\RatingResource\Pages;
 
 use App\Filament\Resources\RatingResource;
+use App\Filament\Widgets\RatingStats;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 
@@ -20,7 +21,7 @@ class ListRatings extends ListRecords
     protected function getHeaderWidgets(): array
     {
         return [
-            RatingResource\Widgets\RatingOverview::class,
+            RatingStats::class,
         ];
     }
 }

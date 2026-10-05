@@ -1,11 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $company->name }}</title>
+    <title>{{ $__env->hasSection('title') ? $__env->yieldContent('title') . ' - ' . $company->name : $company->name }}</title>
+    <meta name="description" content="{{ $__env->yieldContent('meta_description', \Illuminate\Support\Str::limit($company->description ?? $company->name, 160)) }}">
+
+    <!-- Open Graph / WhatsApp & social link previews -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="{{ $company->name }}">
+    <meta property="og:title" content="{{ $__env->hasSection('title') ? $__env->yieldContent('title') . ' - ' . $company->name : $company->name }}">
+    <meta property="og:description" content="{{ $__env->yieldContent('meta_description', \Illuminate\Support\Str::limit($company->description ?? $company->name, 160)) }}">
+    <meta property="og:image" content="{{ $__env->yieldContent('meta_image', \App\Helpers\ImageHelper::url($company->logo)) }}">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- Favicons -->
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    <link rel="icon" href="{{ asset('favicon-32x32.png') }}" type="image/png" sizes="32x32">
+    <link rel="icon" href="{{ asset('favicon-16x16.png') }}" type="image/png" sizes="16x16">
+    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
+    <link rel="manifest" href="{{ asset('site.webmanifest') }}">
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <!-- Styles -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,51 +32,60 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap"
         rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            line-height: 1.6;
-            color: #333333;
-        }
-
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6,
-        {
-        font-family: 'Poppins', sans-serif;
-        font-weight: 600;
-        letter-spacing: -0.02em;
-        }
-
-        p {
-            font-family: 'Inter', sans-serif;
-        }
-
-        .lead {
-            font-family: 'Inter', sans-serif;
-            font-weight: 400;
-            line-height: 1.8;
-        }
-
-        /* Section Headers */
-        .display-4 {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 700;
-            font-size: 2.5rem;
-            letter-spacing: -0.03em;
-            margin-bottom: 0.5rem;
-        }
-    </style>
     @stack('styles')
 </head>
 
 <body>
+    <!-- Page loading screen. Hidden as soon as the page has finished
+         loading (see inline script just below), and shown again briefly
+         on the next outgoing navigation (see resources/js/app.js). Kept as
+         plain inline markup + a tiny inline script — not part of the Vite
+         bundle — so it doesn't depend on the very JS/CSS that might still
+         be loading, and a <noscript> rule guarantees it can never trap the
+         page if JS is disabled. -->
+    <div id="page-loader" class="page-loader" aria-hidden="true">
+        <div class="page-loader-inner">
+            @if (!empty($company->logo))
+                <img src="{{ \App\Helpers\ImageHelper::url($company->logo) }}" alt="" class="page-loader-logo">
+            @endif
+            <div class="page-loader-spinner"></div>
+        </div>
+    </div>
+    <noscript>
+        <style>#page-loader { display: none !important; }</style>
+    </noscript>
+    <script>
+        (function () {
+            var loader = document.getElementById('page-loader');
+            if (!loader) return;
+
+            var shownAt = Date.now();
+            var hidden = false;
+
+            function hide() {
+                if (hidden) return;
+                hidden = true;
+                // Keep it visible at least briefly so it doesn't just flash
+                // on fast/cached loads — long enough to read as intentional,
+                // short enough to not feel like it's stalling anything.
+                var wait = Math.max(0, 250 - (Date.now() - shownAt));
+                setTimeout(function () {
+                    loader.classList.add('page-loader-hidden');
+                }, wait);
+            }
+
+            if (document.readyState === 'complete') {
+                hide();
+            } else {
+                window.addEventListener('load', hide);
+            }
+
+            // Safety net: never block the page for more than a few seconds
+            // no matter what else goes wrong.
+            setTimeout(hide, 6000);
+        })();
+    </script>
+
     <!-- Navbar -->
     @if (!Request::is('login') && !Request::is('register') && !Request::is('forgot-password'))
         @include('layouts.navigation')
@@ -74,21 +102,6 @@
     @endif
 
     <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            AOS.init({
-                mirror: true, // Enable reverse animations
-                once: false, // Whether animation should happen only once
-                offset: 120, // Offset (in px) from the original trigger point
-                duration: 1000, // Duration of animation
-                easing: 'ease-in-out', // Default easing for AOS animations
-                anchorPlacement: 'top-bottom', // Defines which position of the element regarding to window should trigger the animation
-            });
-        });
-    </script>
     @stack('scripts')
 </body>
 

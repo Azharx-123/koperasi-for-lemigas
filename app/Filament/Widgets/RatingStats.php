@@ -11,20 +11,42 @@ class RatingStats extends BaseWidget
 {
     protected function getStats(): array
     {
-        $totalRatings = Rating::count();
-        $totalRatedProducts = Product::whereHas('ratings')->count();
-        $averageRating = number_format(Rating::where('is_approved', true)->avg('score') ?: 0, 1);
-        $pendingRatings = Rating::where('is_approved', false)->count();
+        // One query: counts grouped by approval + score. Everything else
+        // below (totals, pending count, average, per-score chart) is
+        // derived from this single result set instead of a separate
+        // query each.
+        $counts = Rating::query()
+            ->selectRaw('is_approved, score, COUNT(*) as count')
+            ->groupBy('is_approved', 'score')
+            ->get();
 
+        $totalRatings = (int) $counts->sum('count');
+        $pendingRatings = (int) $counts->where('is_approved', false)->sum('count');
+
+        $approved = $counts->where('is_approved', true);
+        $approvedTotal = $approved->sum('count');
+        $weightedScoreSum = $approved->sum(fn ($row) => $row->score * $row->count);
+        $averageRating = number_format($approvedTotal > 0 ? $weightedScoreSum / $approvedTotal : 0, 1);
+
+        $chart = [];
+        foreach ([5, 4, 3, 2, 1] as $score) {
+            $chart[] = (int) ($approved->firstWhere('score', $score)->count ?? 0);
+        }
+
+        $totalRatedProducts = Rating::query()->distinct('product_id')->count('product_id');
+
+        // ratings_avg_score is computed here (restricted to approved ratings)
+        // and reused for both ordering and display, instead of the previous
+        // code running an AVG(score) subquery just to order by, then
+        // separately reading an "avg" attribute that was never actually
+        // selected (it always came back null/0).
         $topRatedProduct = Product::whereHas('ratings', function ($query) {
-            $query->where('is_approved', true);
-        })
-            ->withCount('ratings')
-            ->orderByDesc(
-                Rating::selectRaw('AVG(score)')
-                    ->whereColumn('product_id', 'products.id')
-                    ->where('is_approved', true)
-            )
+                $query->where('is_approved', true);
+            })
+            ->withAvg(['ratings as ratings_avg_score' => function ($query) {
+                $query->where('is_approved', true);
+            }], 'score')
+            ->orderByDesc('ratings_avg_score')
             ->first();
 
         return [
@@ -34,13 +56,7 @@ class RatingStats extends BaseWidget
 
             Stat::make('Rating Rata-rata', $averageRating . ' dari 5.0')
                 ->description('Semua produk')
-                ->chart([
-                    Rating::where('is_approved', true)->where('score', 5)->count(),
-                    Rating::where('is_approved', true)->where('score', 4)->count(),
-                    Rating::where('is_approved', true)->where('score', 3)->count(),
-                    Rating::where('is_approved', true)->where('score', 2)->count(),
-                    Rating::where('is_approved', true)->where('score', 1)->count(),
-                ])
+                ->chart($chart)
                 ->color(floatval($averageRating) >= 4 ? 'success' : (floatval($averageRating) >= 3 ? 'warning' : 'danger')),
 
             Stat::make('Produk Rating Tertinggi', $topRatedProduct ? $topRatedProduct->name : '-')

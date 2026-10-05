@@ -4,7 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\SponsorResource\Pages;
 use App\Models\Sponsor;
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -22,7 +21,6 @@ class SponsorResource extends Resource
     protected static ?string $model = Sponsor::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-megaphone';
-
     protected static ?string $navigationGroup = 'Content';
 
     protected static ?int $navigationSort = 1;
@@ -41,7 +39,11 @@ class SponsorResource extends Resource
                     ->required()
                     ->image()
                     ->directory('sponsors')
-                    ->visibility('public'),
+                    ->visibility('public')
+                    ->maxSize(4096)
+                    ->saveUploadedFileUsing(
+                        fn ($file) => \App\Helpers\ImageHelper::optimizeAndStore($file, 'sponsors', maxWidth: 800, maxHeight: 800, quality: 85)
+                    ),
 
                 TextInput::make('website_url')
                     ->required()
@@ -90,15 +92,13 @@ class SponsorResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([
-                //
-            ])
+            ->filters([])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
                 ->before(function (Sponsor $record) {
-                    if ($record->image) {
-                        Storage::disk('public')->delete($record->image);
+                    if ($record->logo) {
+                        Storage::disk('public')->delete($record->logo);
                     }
                 }),
             ])
@@ -112,9 +112,7 @@ class SponsorResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

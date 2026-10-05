@@ -13,7 +13,6 @@ use Filament\Tables\Table;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Support\Enums\FontWeight;
 
 class OrderResource extends Resource
@@ -21,8 +20,7 @@ class OrderResource extends Resource
     protected static ?string $model = Order::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
-
-    protected static ?string $navigationGroup = 'E-Commerce';
+    protected static ?string $navigationGroup = 'Sales';
 
     protected static ?int $navigationSort = 1;
 
@@ -30,14 +28,24 @@ class OrderResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::where('status', 'pending')->count();
+        return (string) static::pendingOrderCount();
     }
 
     public static function getNavigationBadgeColor(): ?string
     {
-        return static::getModel()::where('status', 'pending')->count() > 0
-            ? 'warning'
-            : 'primary';
+        return static::pendingOrderCount() > 0 ? 'warning' : 'primary';
+    }
+
+    /**
+     * Cached within the request so the badge label and its color don't
+     * each run their own separate `where('status', 'pending')->count()`
+     * query — Filament calls both when rendering the sidebar.
+     */
+    protected static function pendingOrderCount(): int
+    {
+        static $count = null;
+
+        return $count ??= static::getModel()::where('status', 'pending')->count();
     }
 
     public static function form(Form $form): Form
@@ -52,31 +60,22 @@ class OrderResource extends Resource
                             ->disabled(),
                         Forms\Components\Select::make('user_id')
                             ->relationship('user', 'name')
-                            ->required()
-                            ->searchable(),
+                            ->searchable()
+                            ->helperText('Kosong berarti pembeli sudah menghapus akunnya.'),
                         Forms\Components\Select::make('status')
-                            ->options([
-                                'pending' => 'Menunggu',
-                                'processing' => 'Diproses',
-                                'shipped' => 'Dikirim',
-                                'delivered' => 'Diterima',
-                                'cancelled' => 'Dibatalkan',
-                            ])
+                            // Only offer statuses this order can legally move to
+                            // from its current one (see Order::STATUS_TRANSITIONS),
+                            // e.g. a cancelled order can't be reopened here, since
+                            // its stock has already been restored elsewhere.
+                            ->options(fn (?Order $record) => $record
+                                ? collect(Order::STATUSES)->only($record->allowedNextStatuses())->all()
+                                : Order::STATUSES)
                             ->required(),
                         Forms\Components\Select::make('payment_status')
-                            ->options([
-                                'pending' => 'Menunggu Pembayaran',
-                                'paid' => 'Lunas',
-                                'failed' => 'Gagal',
-                                'refunded' => 'Dikembalikan',
-                            ])
+                            ->options(Order::PAYMENT_STATUSES)
                             ->required(),
                         Forms\Components\Select::make('payment_method')
-                            ->options([
-                                'bank_transfer' => 'Transfer Bank',
-                                'credit_card' => 'Kartu Kredit',
-                                'ewallet' => 'E-Wallet',
-                            ])
+                            ->options(Order::PAYMENT_METHODS)
                             ->required(),
                         Forms\Components\TextInput::make('tracking_number')
                             ->maxLength(255),
@@ -86,22 +85,31 @@ class OrderResource extends Resource
 
                 Forms\Components\Section::make('Totals')
                     ->schema([
+                        // subtotal/tax/total are recalculated automatically from the
+                        // order's items (see Order::recalculateTotals(), triggered by
+                        // ItemsRelationManager / OrderItemResource) — leaving them
+                        // editable here let an admin's manual correction get silently
+                        // overwritten the next time any item changed. Display-only.
                         Forms\Components\TextInput::make('subtotal')
                             ->numeric()
-                            ->required()
-                            ->prefix('Rp'),
+                            ->prefix('Rp')
+                            ->disabled()
+                            ->dehydrated(false),
                         Forms\Components\TextInput::make('shipping')
                             ->numeric()
                             ->required()
-                            ->prefix('Rp'),
+                            ->prefix('Rp')
+                            ->helperText('Tidak dihitung otomatis dari item — boleh diedit manual.'),
                         Forms\Components\TextInput::make('tax')
                             ->numeric()
-                            ->required()
-                            ->prefix('Rp'),
+                            ->prefix('Rp')
+                            ->disabled()
+                            ->dehydrated(false),
                         Forms\Components\TextInput::make('total')
                             ->numeric()
-                            ->required()
-                            ->prefix('Rp'),
+                            ->prefix('Rp')
+                            ->disabled()
+                            ->dehydrated(false),
                     ])
                     ->columns(2),
 
@@ -155,61 +163,25 @@ class OrderResource extends Resource
                 Tables\Columns\TextColumn::make('user.name')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('formattedTotal')
+                Tables\Columns\TextColumn::make('total')
                     ->label('Total')
+                    ->money('IDR')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
-                        'pending' => 'warning',
-                        'processing' => 'info',
-                        'shipped' => 'primary',
-                        'delivered' => 'success',
-                        'cancelled' => 'danger',
-                        default => 'secondary',
-                    })
-                    ->formatStateUsing(fn(string $state): string => match ($state) {
-                        'pending' => 'Menunggu',
-                        'processing' => 'Diproses',
-                        'shipped' => 'Dikirim',
-                        'delivered' => 'Diterima',
-                        'cancelled' => 'Dibatalkan',
-                        default => ucfirst($state),
-                    }),
+                    ->color(fn (string $state): string => Order::STATUS_COLORS[$state] ?? 'secondary')
+                    ->formatStateUsing(fn (string $state): string => Order::STATUSES[$state] ?? ucfirst($state)),
                 Tables\Columns\TextColumn::make('payment_status')
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
-                        'pending' => 'warning',
-                        'paid' => 'success',
-                        'failed' => 'danger',
-                        'refunded' => 'info',
-                        default => 'secondary',
-                    })
-                    ->formatStateUsing(fn(string $state): string => match ($state) {
-                        'pending' => 'Menunggu Pembayaran',
-                        'paid' => 'Lunas',
-                        'failed' => 'Gagal',
-                        'refunded' => 'Dikembalikan',
-                        default => ucfirst($state),
-                    }),
+                    ->color(fn (string $state): string => Order::PAYMENT_STATUS_COLORS[$state] ?? 'secondary')
+                    ->formatStateUsing(fn (string $state): string => Order::PAYMENT_STATUSES[$state] ?? ucfirst($state)),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->options([
-                        'pending' => 'Menunggu',
-                        'processing' => 'Diproses',
-                        'shipped' => 'Dikirim',
-                        'delivered' => 'Diterima',
-                        'cancelled' => 'Dibatalkan',
-                    ]),
+                    ->options(Order::STATUSES),
                 Tables\Filters\SelectFilter::make('payment_status')
-                    ->options([
-                        'pending' => 'Menunggu Pembayaran',
-                        'paid' => 'Lunas',
-                        'failed' => 'Gagal',
-                        'refunded' => 'Dikembalikan',
-                    ]),
+                    ->options(Order::PAYMENT_STATUSES),
                 Tables\Filters\Filter::make('created_at')
                     ->form([
                         Forms\Components\DatePicker::make('created_from'),
@@ -253,45 +225,14 @@ class OrderResource extends Resource
                             ->label('Customer'),
                         Infolists\Components\TextEntry::make('status')
                             ->badge()
-                            ->color(fn(string $state): string => match ($state) {
-                                'pending' => 'warning',
-                                'processing' => 'info',
-                                'shipped' => 'primary',
-                                'delivered' => 'success',
-                                'cancelled' => 'danger',
-                                default => 'secondary',
-                            })
-                            ->formatStateUsing(fn(string $state): string => match ($state) {
-                                'pending' => 'Menunggu',
-                                'processing' => 'Diproses',
-                                'shipped' => 'Dikirim',
-                                'delivered' => 'Diterima',
-                                'cancelled' => 'Dibatalkan',
-                                default => ucfirst($state),
-                            }),
+                            ->color(fn (string $state): string => Order::STATUS_COLORS[$state] ?? 'secondary')
+                            ->formatStateUsing(fn (string $state): string => Order::STATUSES[$state] ?? ucfirst($state)),
                         Infolists\Components\TextEntry::make('payment_status')
                             ->badge()
-                            ->color(fn(string $state): string => match ($state) {
-                                'pending' => 'warning',
-                                'paid' => 'success',
-                                'failed' => 'danger',
-                                'refunded' => 'info',
-                                default => 'secondary',
-                            })
-                            ->formatStateUsing(fn(string $state): string => match ($state) {
-                                'pending' => 'Menunggu Pembayaran',
-                                'paid' => 'Lunas',
-                                'failed' => 'Gagal',
-                                'refunded' => 'Dikembalikan',
-                                default => ucfirst($state),
-                            }),
+                            ->color(fn (string $state): string => Order::PAYMENT_STATUS_COLORS[$state] ?? 'secondary')
+                            ->formatStateUsing(fn (string $state): string => Order::PAYMENT_STATUSES[$state] ?? ucfirst($state)),
                         Infolists\Components\TextEntry::make('payment_method')
-                            ->formatStateUsing(fn(string $state): string => match ($state) {
-                                'bank_transfer' => 'Transfer Bank',
-                                'credit_card' => 'Kartu Kredit',
-                                'ewallet' => 'E-Wallet',
-                                default => ucfirst($state),
-                            }),
+                            ->formatStateUsing(fn (string $state): string => Order::PAYMENT_METHODS[$state] ?? ucfirst($state)),
                         Infolists\Components\TextEntry::make('tracking_number')
                             ->default('Not yet assigned'),
                         Infolists\Components\TextEntry::make('shipped_at')
@@ -333,6 +274,11 @@ class OrderResource extends Resource
                     ])
                     ->columns(2),
             ]);
+    }
+
+    public static function canCreate(): bool
+    {
+        return false;
     }
 
     public static function getRelations(): array

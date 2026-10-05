@@ -1,0 +1,31 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE55C"/>
+      <stop offset="100%" stop-color="#B29700"/>
+    </linearGradient>
+    <linearGradient id="faceGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFD700"/>
+      <stop offset="100%" stop-color="#FFC700"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer ring -->
+  <circle cx="100" cy="100" r="96" fill="url(#ringGrad)"/>
+  <!-- Inner face -->
+  <circle cx="100" cy="100" r="84" fill="url(#faceGrad)"/>
+  <circle cx="100" cy="100" r="84" fill="none" stroke="#343A40" stroke-width="2" opacity="0.15"/>
+
+  <!-- Ring of cooperation: three linked nodes around a bolt, standing in for -->
+  <!-- "members joined together" without borrowing any real emblem's icons -->
+  <g stroke="#343A40" stroke-width="7" fill="none" opacity="0.9">
+    <circle cx="100" cy="58" r="9" fill="#343A40" stroke="none"/>
+    <circle cx="68" cy="96" r="9" fill="#343A40" stroke="none"/>
+    <circle cx="132" cy="96" r="9" fill="#343A40" stroke="none"/>
+    <path d="M100,58 L68,96 L132,96 Z" stroke-linejoin="round"/>
+  </g>
+  <path d="M104,64 L82,100 L97,100 L92,124 L119,86 L102,86 Z" fill="#FFD700" stroke="#343A40" stroke-width="3" stroke-linejoin="round"/>
+
+  <!-- Wordmark -->
+  <text x="100" y="150" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="34" fill="#343A40" letter-spacing="2">KEP</text>
+</svg>

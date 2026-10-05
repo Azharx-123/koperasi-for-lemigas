@@ -16,7 +16,7 @@ class FeatureResource extends Resource
 {
     protected static ?string $model = Feature::class;
     protected static ?string $navigationIcon = 'heroicon-o-puzzle-piece';
-    protected static ?string $navigationGroup = 'Website Management';
+    protected static ?string $navigationGroup = 'Content';
 
     public static function form(Form $form): Form
     {

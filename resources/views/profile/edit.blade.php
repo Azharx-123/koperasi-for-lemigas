@@ -1,267 +1,10 @@
 @extends('layouts.app')
 
 @push('styles')
-    <style>
-        :root {
-            --yellow-primary: 255, 215, 0;
-            --yellow-light: 255, 229, 92;
-            --yellow-dark: 178, 151, 0;
-            --gray-100: 248, 249, 250;
-            --gray-200: 233, 236, 239;
-            --gray-300: 222, 226, 230;
-            --gray-600: 108, 117, 125;
-            --gray-800: 52, 58, 64;
-            --black: 33, 37, 41;
-            --danger: 220, 53, 69;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, rgba(var(--gray-100), 0.95), rgba(255, 255, 255, 0.95));
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: -50%;
-            right: -50%;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: rgba(var(--yellow-primary), 0.1);
-            z-index: -1;
-            animation: float 15s ease-in-out infinite;
-        }
-
-        body::after {
-            content: '';
-            position: fixed;
-            bottom: -30%;
-            left: -30%;
-            width: 80%;
-            height: 80%;
-            border-radius: 50%;
-            background: rgba(var(--yellow-dark), 0.05);
-            z-index: -1;
-            animation: float 20s ease-in-out infinite reverse;
-        }
-
-        @keyframes float {
-            0% {
-                transform: translate(0, 0) rotate(0deg);
-            }
-
-            50% {
-                transform: translate(5%, 5%) rotate(5deg);
-            }
-
-            100% {
-                transform: translate(0, 0) rotate(0deg);
-            }
-        }
-
-        .profile-container {
-            max-width: 800px;
-            margin: auto;
-            padding: 2rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .card {
-            border: none;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.95);
-            overflow: hidden;
-            position: relative;
-            margin-bottom: 2rem;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg,
-                    rgb(var(--yellow-primary)),
-                    rgb(var(--yellow-dark)),
-                    rgb(var(--yellow-light)));
-        }
-
-        .danger-card::before {
-            background: linear-gradient(90deg,
-                    rgb(var(--danger)),
-                    rgb(var(--danger)),
-                    rgba(var(--danger), 0.7));
-        }
-
-        .profile-header {
-            text-align: center;
-            margin-bottom: 2rem;
-            position: relative;
-        }
-
-        .profile-header h2 {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            color: rgb(var(--gray-800));
-            margin-bottom: 0.5rem;
-        }
-
-        .profile-header p {
-            color: rgb(var(--gray-600));
-        }
-
-        .form-control {
-            border: 2px solid rgb(var(--gray-200));
-            border-radius: 10px;
-            padding: 0.8rem 1rem;
-            transition: all 0.3s ease;
-            font-size: 0.95rem;
-        }
-
-        .form-control:focus {
-            box-shadow: 0 0 0 4px rgba(var(--yellow-primary), 0.1);
-            border-color: rgb(var(--yellow-primary));
-        }
-
-        .form-label {
-            font-weight: 500;
-            color: rgb(var(--gray-800));
-            margin-bottom: 0.5rem;
-        }
-
-        .btn-primary {
-            background: rgb(var(--yellow-primary));
-            border: none;
-            color: rgb(var(--gray-800));
-            padding: 0.8rem 1.5rem;
-            font-weight: 600;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-primary:hover {
-            background: rgb(var(--yellow-dark));
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(var(--yellow-primary), 0.3);
-        }
-
-        .btn-danger {
-            background: rgb(var(--danger));
-            border: none;
-            color: white;
-            padding: 0.8rem 1.5rem;
-            font-weight: 600;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-danger:hover {
-            background: rgba(var(--danger), 0.85);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(var(--danger), 0.3);
-        }
-
-        .btn-secondary {
-            background: rgb(var(--gray-200));
-            border: none;
-            color: rgb(var(--gray-800));
-            padding: 0.8rem 1.5rem;
-            font-weight: 600;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-secondary:hover {
-            background: rgb(var(--gray-300));
-            transform: translateY(-2px);
-        }
-
-        .section-title {
-            font-weight: 600;
-            color: rgb(var(--gray-800));
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid rgba(var(--yellow-primary), 0.3);
-        }
-
-        .alert {
-            border-radius: 10px;
-            border: none;
-            padding: 1rem;
-        }
-
-        .alert-success {
-            background: rgba(var(--yellow-light), 0.2);
-            color: rgb(var(--yellow-dark));
-        }
-
-        .invalid-feedback {
-            font-size: 0.85rem;
-            margin-top: 0.5rem;
-        }
-
-        .avatar-section {
-            display: flex;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid rgb(var(--yellow-primary));
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .avatar-info {
-            margin-left: 1.5rem;
-        }
-
-        /* Modal Styles */
-        .modal-content {
-            border-radius: 20px;
-            border: none;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-        }
-
-        .modal-header {
-            border-bottom: 2px solid rgba(var(--danger), 0.2);
-            padding: 1.5rem;
-        }
-
-        .modal-footer {
-            border-top: none;
-            padding: 1.5rem;
-        }
-
-        @media (max-width: 576px) {
-            .profile-container {
-                padding: 1rem;
-            }
-
-            .card {
-                border-radius: 15px;
-            }
-
-            .avatar {
-                width: 80px;
-                height: 80px;
-            }
-        }
-    </style>
+    @vite('resources/css/pages/profile-edit.css')
 @endpush
+
+@section('title', 'Edit Profil')
 
 @section('content')
     <div class="container profile-container my-5">
@@ -331,6 +74,96 @@
                         @endif
                     </div>
 
+                    <hr class="my-4">
+
+                    <div class="mb-3">
+                        <h5 class="mb-1">Data Pengiriman</h5>
+                        <p class="text-muted small mb-0">
+                            Opsional — kalau diisi, data ini otomatis mengisi form checkout supaya Anda tidak perlu
+                            mengetik ulang setiap belanja.
+                        </p>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="phone" class="form-label">Nomor HP</label>
+                        <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone"
+                            name="phone" value="{{ old('phone', $user->phone) }}" autocomplete="tel">
+                        @error('phone')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="company" class="form-label">Perusahaan (Opsional)</label>
+                        <input type="text" class="form-control @error('company') is-invalid @enderror" id="company"
+                            name="company" value="{{ old('company', $user->company) }}" autocomplete="organization">
+                        @error('company')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="address" class="form-label">Alamat Lengkap</label>
+                        <textarea class="form-control @error('address') is-invalid @enderror" id="address"
+                            name="address" rows="3" autocomplete="street-address">{{ old('address', $user->address) }}</textarea>
+                        @error('address')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label for="province" class="form-label">Provinsi</label>
+                            <input type="text" class="form-control @error('province') is-invalid @enderror"
+                                id="province" name="province" value="{{ old('province', $user->province) }}">
+                            @error('province')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label for="city" class="form-label">Kota/Kabupaten</label>
+                            <input type="text" class="form-control @error('city') is-invalid @enderror" id="city"
+                                name="city" value="{{ old('city', $user->city) }}">
+                            @error('city')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label for="district" class="form-label">Kecamatan</label>
+                            <input type="text" class="form-control @error('district') is-invalid @enderror"
+                                id="district" name="district" value="{{ old('district', $user->district) }}">
+                            @error('district')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label for="postal_code" class="form-label">Kode Pos</label>
+                            <input type="text" class="form-control @error('postal_code') is-invalid @enderror"
+                                id="postal_code" name="postal_code"
+                                value="{{ old('postal_code', $user->postal_code) }}" maxlength="10">
+                            @error('postal_code')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+
                     <div class="d-flex justify-content-end">
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save me-2"></i>Simpan Perubahan
@@ -365,16 +198,16 @@
                 </div>
                 <div class="modal-body">
                     <p>Anda yakin ingin menghapus akun Anda? Tindakan ini tidak dapat dibatalkan dan semua data Anda akan dihapus secara permanen.</p>
-                    
+
                     <form method="post" action="{{ route('profile.destroy') }}" id="delete-account-form">
                         @csrf
                         @method('delete')
-                        
+
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control @error('password', 'userDeletion') is-invalid @enderror" 
+                            <input type="password" class="form-control @error('password', 'userDeletion') is-invalid @enderror"
                                 id="password" name="password" placeholder="Masukkan password Anda untuk konfirmasi">
-                            
+
                             @error('password', 'userDeletion')
                                 <div class="invalid-feedback">
                                     {{ $message }}

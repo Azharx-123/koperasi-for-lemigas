@@ -1,19 +1,37 @@
 @php
     $isWelcomePage = Route::currentRouteName() === 'welcome';
     $isCartPage = Route::currentRouteName() === 'cart.show';
+    $isOrdersPage = Route::currentRouteName() === 'orders.index';
 @endphp
 
 <style>
     /* Base navbar styles */
     .navbar {
         transition: background-color 0.3s ease;
-        padding-top: 1rem;
-        padding-bottom: 1rem;
+        padding-top: var(--spacing-sm);
+        padding-bottom: var(--spacing-sm);
     }
 
     .navbar-brand {
         font-size: 1.5rem;
         font-weight: 700;
+    }
+
+    /* Cart icon + notification-dot count badge */
+    .cart-icon-wrap {
+        position: relative;
+        display: inline-flex;
+    }
+
+    .cart-count {
+        position: absolute;
+        top: -0.5rem;
+        right: -0.6rem;
+        font-size: 0.65rem;
+        line-height: 1;
+        padding: 0.3em 0.42em;
+        min-width: 1.1rem;
+        box-shadow: 0 0 0 2px rgb(var(--black));
     }
 
     .nav-link {
@@ -28,13 +46,13 @@
     .nav-link i {
         width: 1.25rem;
         text-align: center;
-        margin-right: 0.5rem;
+        margin-right: var(--spacing-xs);
     }
 
     .navbar.fixed-top.scrolled {
-        background-color: rgba(33, 37, 41, 0.95);
-        padding-top: 1rem;
-        padding-bottom: 1rem;
+        background-color: rgba(var(--black), 0.95);
+        padding-top: var(--spacing-sm);
+        padding-bottom: var(--spacing-sm);
         backdrop-filter: blur(10px);
     }
 
@@ -49,7 +67,7 @@
     }
 
     .navbar .dropdown-item:hover {
-        background-color: #f8f9fa;
+        background-color: rgb(var(--gray-100));
     }
 
     .navbar .dropdown-item i {
@@ -59,14 +77,14 @@
 
     @media (max-width: 991.98px) {
         .navbar.fixed-top {
-            background-color: rgba(33, 37, 41, 0.95);
+            background-color: rgba(var(--black), 0.95);
         }
 
         .navbar .dropdown-menu {
             background-color: transparent;
             border: none;
             box-shadow: none;
-            padding-left: 1rem;
+            padding-left: var(--spacing-sm);
         }
 
         .navbar .dropdown-item {
@@ -83,8 +101,8 @@
 
 <nav class="navbar navbar-expand-lg {{ $isWelcomePage ? 'navbar-dark fixed-top' : 'navbar-dark bg-dark' }}">
     <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="#">
-            <img src="{{ Storage::url($company->logo) }}" alt="Logo {{ $company->name }}" height="40" class="me-2">
+        <a class="navbar-brand d-flex align-items-center" href="{{ route('welcome') }}">
+            <img src="{{ \App\Helpers\ImageHelper::url($company->logo) }}" alt="Logo {{ $company->name }}" height="40" class="me-2">
             {{ $company->name }}
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -110,10 +128,22 @@
                 @if (!$isCartPage)
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('cart.show') }}">
-                            <i class="fas fa-shopping-cart me-2"></i>Keranjang
+                            <span class="cart-icon-wrap me-2">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span class="badge bg-danger rounded-pill cart-count {{ $cartCount > 0 ? '' : 'd-none' }}">{{ $cartCount }}</span>
+                            </span>Keranjang
                         </a>
                     </li>
                 @endif
+                @auth
+                    @if (!$isOrdersPage)
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('orders.index') }}">
+            <i class="fas fa-receipt me-2"></i>Pesanan
+        </a>
+    </li>
+@endif
+                @endauth
 
                 @guest
                     <li class="nav-item">

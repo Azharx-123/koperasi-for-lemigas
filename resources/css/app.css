@@ -1,3 +1,332 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/*
+ * Bootstrap, AOS, and Font Awesome used to load from CDN <link> tags in
+ * layouts/app.blade.php (4 separate third-party domains, render-blocking,
+ * no browser cache reuse across visits). They're now installed as npm
+ * packages and bundled here instead — see package.json.
+ *
+ * Import order matters: Bootstrap's base styles must load before the
+ * brand overrides further down (.btn-primary etc.), same as when the
+ * CDN <link> tags sat above the inline <style> block in the old layout.
+ */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'aos/dist/aos.css';
+@import '@fortawesome/fontawesome-free/css/all.min.css';
+
+/*
+ * Everything below was the inline <style> block in layouts/app.blade.php,
+ * moved here verbatim so it compiles through Vite (minified, cache-busted
+ * via the manifest) instead of being re-parsed on every single page load.
+ */
+        :root {
+            --yellow-primary: 255, 215, 0;
+            --yellow-light: 255, 229, 92;
+            --yellow-dark: 178, 151, 0;
+            --gray-100: 248, 249, 250;
+            --gray-200: 233, 236, 239;
+            --gray-300: 222, 226, 230;
+            --gray-600: 108, 117, 125;
+            --gray-800: 52, 58, 64;
+            --black: 33, 37, 41;
+            --danger: 220, 53, 69;
+            --danger-dark: 187, 45, 59;
+            --success: 25, 135, 84;
+
+            /* Variabel ukuran font responsif */
+            --font-size-base: 16px;
+            --font-size-sm: 0.875rem;
+            --font-size-md: 1rem;
+            --font-size-lg: 1.25rem;
+            --font-size-xl: 1.5rem;
+            --font-size-2xl: 2rem;
+            --font-size-3xl: 2.5rem;
+
+            /* Variabel spacing */
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+
+            /* Tinggi navbar statis (non-welcome page, lihat navigation.blade.php:
+               .navbar-dark.bg-dark, bukan yang fixed-top di welcome). Dipakai
+               halaman yang punya hero setinggi 1 layar penuh (mis. about-hero)
+               lewat calc(100vh - var(--navbar-height-static)), supaya navbar +
+               hero pas satu layar tanpa perlu menebak ulang di tiap halaman.
+               Dihitung dari padding navbar (1rem atas+bawah) + logo 40px. */
+            --navbar-height-static: 76px;
+
+            /* Variabel transisi */
+            --transition-fast: 0.2s ease;
+            --transition-medium: 0.3s ease;
+            --transition-slow: 0.5s ease;
+
+            /* Variabel border-radius */
+            --radius-sm: 0.25rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 1rem;
+            --radius-xl: 1.5rem;
+            --radius-full: 50%;
+
+            /* Variabel radius tambahan: nilai ini yang sebenarnya paling
+               banyak dipakai di seluruh halaman (card, panel, tombol pill) */
+            --radius-card: 10px;
+            --radius-panel: 15px;
+            --radius-hero: 20px;
+            --radius-pill: 50px;
+
+            /* Shadow tokens for the handful of box-shadow values that were
+               already repeated identically across many files. This does NOT
+               cover every box-shadow in the project — most of the remaining
+               variety looks like deliberate per-element visual weight (a big
+               hero image vs. a small badge), not drift, so it's left as-is
+               rather than force-flattened into one scale. */
+            --shadow-yellow-glow: 0 4px 15px rgba(var(--yellow-primary), 0.3);
+            --shadow-yellow-glow-lg: 0 8px 25px rgba(var(--yellow-primary), 0.4);
+            --shadow-card-hover: 0 15px 30px rgba(0, 0, 0, 0.08);
+            --shadow-focus-ring: 0 0 0 4px rgba(var(--yellow-primary), 0.1);
+
+            /* Dark-mode tokens: currently only used on the homepage's toggle-
+               able dark theme, kept centralized here in case dark mode gets
+               extended to other pages later. */
+            --dark-bg: 0, 0, 0;
+            --dark-surface: 26, 26, 26;
+            --dark-text-muted: 224, 224, 224;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: rgb(var(--gray-800));
+
+            /* Sticky-footer shell: nav + main + footer as a column that's
+               always at least one viewport tall. Pages whose content is
+               shorter than the screen get their footer pinned to the
+               bottom (instead of it floating right under the content with
+               a stray gap below); "main { flex: 1 0 auto }" below is what
+               actually absorbs that leftover space. Doesn't affect pages
+               whose content already exceeds one screen — they scroll
+               exactly as before. */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @supports (min-height: 100dvh) {
+            body {
+                min-height: 100dvh;
+            }
+        }
+
+        body > main {
+            flex: 1 0 auto;
+        }
+
+        /* Page loading screen — markup lives in layouts/app.blade.php so it
+           paints before this stylesheet or any JS has necessarily finished
+           loading. Shown by default; JS toggles .page-loader-hidden. */
+        .page-loader {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgb(var(--black));
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .page-loader.page-loader-hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .page-loader-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .page-loader-logo {
+            height: 56px;
+            width: auto;
+            max-width: 160px;
+            object-fit: contain;
+            animation: page-loader-pulse 1.4s ease-in-out infinite;
+        }
+
+        .page-loader-spinner {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            border: 3px solid rgba(var(--yellow-primary), 0.25);
+            border-top-color: rgb(var(--yellow-primary));
+            animation: page-loader-spin 0.8s linear infinite;
+        }
+
+        @keyframes page-loader-spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes page-loader-pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.75;
+                transform: scale(0.96);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .page-loader-logo,
+            .page-loader-spinner {
+                animation: none;
+            }
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        }
+
+        p {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .lead {
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            line-height: 1.8;
+        }
+
+        /* Section Headers */
+        .display-4 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 2.5rem;
+            letter-spacing: -0.03em;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        /* Brand override for Bootstrap's default .btn-primary (blue) so any
+           page using <x-primary-button> or class="btn btn-primary" gets the
+           brand yellow automatically. Previously copy-pasted into 5 separate
+           pages; centralized here so new pages get it for free. */
+        .btn-primary {
+            background: rgb(var(--yellow-primary));
+            border: none;
+            color: rgb(var(--gray-800));
+            padding: 0.8rem 1.5rem;
+            font-weight: 600;
+            border-radius: var(--radius-card);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary:hover {
+            background: rgb(var(--yellow-dark));
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(var(--yellow-primary), 0.3);
+        }
+
+        /* Shared primary CTA button (gradient pill). Used for the main
+           "take action" buttons site-wide (shop now, checkout, view order,
+           add to cart) so the same role looks the same everywhere. Pick a
+           size modifier alongside it: .btn-cta-lg or .btn-cta-sm. */
+        .btn-cta {
+            display: inline-block;
+            background: linear-gradient(45deg, rgb(var(--yellow-dark)), rgb(var(--yellow-primary)));
+            color: white;
+            font-weight: 600;
+            border: none;
+            border-radius: var(--radius-pill);
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn-cta:hover {
+            color: white;
+        }
+
+        .btn-cta-lg {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            box-shadow: var(--shadow-yellow-glow);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .btn-cta-lg:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-yellow-glow-lg);
+        }
+
+        .btn-cta-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(var(--yellow-primary), 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-cta-sm:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(var(--yellow-primary), 0.4);
+        }
+
+        /* Pagination (products, order history, ratings). Laravel's
+           Bootstrap-5 pagination view (Paginator::useBootstrapFive(), set
+           in AppServiceProvider) renders standard .pagination/.page-link
+           markup; this reskins it from Bootstrap's default blue to the
+           site's yellow/pill language so it matches every other button. */
+        .pagination {
+            gap: 0.35rem;
+            flex-wrap: wrap;
+        }
+
+        .pagination .page-link {
+            border: 2px solid rgb(var(--gray-200));
+            border-radius: var(--radius-pill);
+            color: rgb(var(--gray-800));
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .pagination .page-link:hover {
+            background-color: rgb(var(--yellow-light));
+            border-color: rgb(var(--yellow-primary));
+            color: rgb(var(--black));
+        }
+
+        .pagination .page-link:focus {
+            box-shadow: var(--shadow-focus-ring);
+        }
+
+        .pagination .page-item.active .page-link {
+            background: linear-gradient(45deg, rgb(var(--yellow-dark)), rgb(var(--yellow-primary)));
+            border-color: transparent;
+            color: white;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            background-color: transparent;
+            border-color: rgb(var(--gray-200));
+            color: rgb(var(--gray-300));
+        }

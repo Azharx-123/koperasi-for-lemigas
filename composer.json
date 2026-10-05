@@ -1,9 +1,9 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "kep/koperasi-portfolio",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "Company profile & e-commerce sederhana untuk koperasi fiktif Koperasi Energi dan Pertambangan (KEP), dibangun dengan Laravel + Filament sebagai proyek portofolio.",
+    "keywords": ["laravel", "filament", "koperasi", "portfolio"],
     "license": "MIT",
     "require": {
         "php": "^8.2",

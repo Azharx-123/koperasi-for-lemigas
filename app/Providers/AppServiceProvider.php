@@ -2,20 +2,19 @@
 
 namespace App\Providers;
 
-use Filament\Facades\Filament;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Auth;
 
-class FilamentServiceProvider extends ServiceProvider
+class AppServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        // Konfigurasi otentikasi dan otorisasi
-        Filament::serving(function () {
-            // Batasi akses hanya untuk admin
-            Filament::authorizeAccessUsing(function () {
-                return auth::check() && auth::user()->role === 'admin';
-            });
-        });
+        // Otorisasi akses panel admin ditangani oleh User::canAccessPanel()
+        // (lihat app/Models/User.php), jadi tidak perlu didaftarkan ulang di
+        // sini. Catatan: Filament::authorizeAccessUsing() tidak tersedia di
+        // Filament v3.3.0 — jangan dipanggil di sini, karena akan
+        // menyebabkan fatal error pada semua request /admin/*, termasuk
+        // halaman login.
+        Paginator::useBootstrapFive();
     }
 }

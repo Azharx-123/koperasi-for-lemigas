@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\GuestCart;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -44,6 +45,11 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
 
         Auth::login($user);
+
+        // #10: kalau sebelum register sempat belanja sebagai tamu, gabungkan
+        // isi keranjang tamu itu ke keranjang akun yang baru saja dibuat —
+        // lihat GuestCart::mergeIntoUserCart().
+        app(GuestCart::class)->mergeIntoUserCart($user);
 
         return redirect(route('welcome', absolute: false));
     }

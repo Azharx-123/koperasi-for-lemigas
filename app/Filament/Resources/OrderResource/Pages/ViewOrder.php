@@ -53,10 +53,19 @@ class ViewOrder extends ViewRecord
                     $this->refreshFormData(['status']);
                 }),
 
+            // "Mark as Paid" only flips payment_status — unlike verifying a
+            // payment confirmation (PaymentConfirmation::verify()), it does
+            // NOT also advance the order's fulfillment status to
+            // "processing". Documented in-UI below (tooltip + confirmation
+            // modal) since that's where an admin would actually need it.
             Actions\Action::make('Mark as Paid')
                 ->color('success')
                 ->icon('heroicon-o-currency-dollar')
-                ->visible(fn($record) => $record->payment_status === 'pending')
+                ->tooltip('Hanya mengubah status pembayaran. Beda dengan memverifikasi bukti transfer, tombol ini tidak memajukan status order ke "Diproses".')
+                ->requiresConfirmation()
+                ->modalHeading('Tandai sebagai lunas?')
+                ->modalDescription('Ini hanya mengubah status pembayaran menjadi "Lunas". Status order (Menunggu/Diproses/dst) tidak ikut berubah — beda dengan memverifikasi bukti transfer pada tab Payment Confirmation, yang otomatis memajukan order ke "Diproses" juga.')
+                ->visible(fn($record) => in_array($record->payment_status, ['pending', 'processing']))
                 ->action(function ($record) {
                     $record->update(['payment_status' => 'paid']);
                     $this->refreshFormData(['payment_status']);
@@ -68,7 +77,8 @@ class ViewOrder extends ViewRecord
                 ->visible(fn($record) => in_array($record->status, ['pending', 'processing']))
                 ->requiresConfirmation()
                 ->action(function ($record) {
-                    $record->update(['status' => 'cancelled']);
+                    $record->cancelAndRestoreStock();
+
                     $this->refreshFormData(['status']);
                 }),
         ];

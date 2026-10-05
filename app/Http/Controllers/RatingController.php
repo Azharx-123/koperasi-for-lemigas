@@ -44,8 +44,10 @@ class RatingController extends Controller
             ]
         );
 
-        // Refresh cache rating
-        $product->refreshRatingCache();
+        // Cache rating produk sudah otomatis di-refresh oleh Rating model
+        // event (lihat Rating::boot()) begitu updateOrCreate() di atas
+        // selesai, jadi $product->rating_average/rating_count di bawah ini
+        // sudah pasti nilai yang terbaru.
 
         if ($request->ajax()) {
             return response()->json([
@@ -65,14 +67,16 @@ class RatingController extends Controller
     /**
      * Display ratings for a product
      */
-    public function index(Product $product)
+    public function index(Request $request, Product $product)
     {
         $ratings = $product->ratings()
             ->approved()
+            ->when($request->filter === 'verified', fn ($q) => $q->verified())
             ->with('user')
             ->orderBy('verified_purchase', 'desc')
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->paginate(10)
+            ->withQueryString();
 
         $userRating = null;
 

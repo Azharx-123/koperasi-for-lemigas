@@ -16,10 +16,4 @@ class EditRating extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
-
-    protected function afterSave(): void
-    {
-        // Refresh product rating cache
-        $this->record->product->refreshRatingCache();
-    }
 }

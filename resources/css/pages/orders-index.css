@@ -1,0 +1,140 @@
+        /* Elegant Separator Style */
+        .elegant-separator {
+            height: 3px;
+            background: linear-gradient(90deg, transparent 0%, rgb(var(--yellow-primary)) 50%, transparent 100%);
+            width: 150px;
+            margin: 2rem auto;
+        }
+
+        .section-title-elegant {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: rgb(var(--black));
+            margin-bottom: var(--spacing-sm);
+            position: relative;
+            text-align: center;
+        }
+
+        .orders-card {
+            background: white;
+            border-radius: var(--radius-panel);
+            overflow: hidden;
+            box-shadow: var(--shadow-card-hover);
+            transition: all 0.3s ease;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .orders-card-header {
+            background-color: rgb(var(--gray-100));
+            padding: var(--spacing-md);
+            border-bottom: 1px solid rgb(var(--gray-200));
+        }
+
+        .orders-card-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0;
+            color: rgb(var(--gray-800));
+        }
+
+        .orders-card-body {
+            padding: var(--spacing-lg);
+        }
+
+        .order-table {
+            width: 100%;
+        }
+
+        .order-table th {
+            padding: var(--spacing-sm);
+            background-color: rgb(var(--gray-100));
+            font-weight: 600;
+            color: rgb(var(--gray-800));
+            text-align: left;
+        }
+
+        .order-table td {
+            padding: var(--spacing-sm);
+            border-bottom: 1px solid rgb(var(--gray-200));
+            vertical-align: middle;
+        }
+
+        .order-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .order-status {
+            display: inline-block;
+            padding: 0.35rem 0.65rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: var(--radius-pill);
+            text-align: center;
+        }
+
+        .empty-orders {
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        .empty-orders-icon {
+            font-size: 4rem;
+            color: rgb(var(--gray-300));
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .empty-orders-text {
+            font-size: 1.25rem;
+            color: rgb(var(--gray-600));
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .pagination {
+            margin-top: var(--spacing-lg);
+            justify-content: center;
+        }
+
+        .page-item:first-child .page-link {
+            border-top-left-radius: 50px;
+            border-bottom-left-radius: 50px;
+        }
+
+        .page-item:last-child .page-link {
+            border-top-right-radius: 50px;
+            border-bottom-right-radius: 50px;
+        }
+
+        .page-link {
+            color: rgb(var(--gray-800));
+            border: 1px solid rgb(var(--gray-200));
+            padding: 0.5rem 1rem;
+        }
+
+        .page-item.active .page-link {
+            background-color: rgb(var(--yellow-primary));
+            border-color: rgb(var(--yellow-primary));
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .section-title-elegant {
+                font-size: 2rem;
+            }
+
+            .orders-card-body {
+                padding: var(--spacing-sm);
+            }
+
+            .order-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .order-table th,
+            .order-table td {
+                padding: 0.75rem;
+            }
+        }

@@ -26,8 +26,14 @@ class AuthenticationTest extends TestCase
             'password' => 'password',
         ]);
 
+        // This app's LoginController redirects to redirect()->intended('/')
+        // rather than route('dashboard') — '/' is the real storefront home
+        // here, and '/dashboard' is only kept as a redirect stub (see
+        // routes/web.php) for anything that still refers to that route
+        // name. With no prior "intended" URL stored in the session, the
+        // post-login redirect lands on the given default: '/'.
         $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $response->assertRedirect('/');
     }
 
     public function test_users_can_not_authenticate_with_invalid_password(): void

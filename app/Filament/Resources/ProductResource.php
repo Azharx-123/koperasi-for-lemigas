@@ -19,8 +19,7 @@ class ProductResource extends Resource
     protected static ?string $model = Product::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
-
-    protected static ?string $navigationGroup = 'Shop Management';
+    protected static ?string $navigationGroup = 'Catalog';
 
     protected static ?int $navigationSort = 1;
 
@@ -28,7 +27,7 @@ class ProductResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Infomasi Dasar')
+                Forms\Components\Section::make('Informasi Dasar')
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->required()
@@ -56,10 +55,12 @@ class ProductResource extends Resource
                         Forms\Components\TextInput::make('price')
                             ->required()
                             ->numeric()
+                            ->minValue(0)
                             ->prefix('Rp'),
                         Forms\Components\TextInput::make('stock')
                             ->required()
                             ->numeric()
+                            ->minValue(0)
                             ->default(0),
                     ])->columns(2),
 
@@ -78,6 +79,10 @@ class ProductResource extends Resource
                         Forms\Components\FileUpload::make('image')
                             ->image()
                             ->directory('products')
+                            ->maxSize(8192) // 8MB raw upload cap; optimizeAndStore then re-encodes it down
+                            ->saveUploadedFileUsing(
+                                fn ($file) => \App\Helpers\ImageHelper::optimizeAndStore($file, 'products')
+                            )
                             ->columnSpanFull(),
                     ]),
 
@@ -87,11 +92,7 @@ class ProductResource extends Resource
                             ->required(),
                         Forms\Components\Select::make('status')
                             ->required()
-                            ->options([
-                                'active' => 'Active',
-                                'draft' => 'Draft',
-                                'inactive' => 'Inactive',
-                            ])
+                            ->options(Product::STATUSES)
                             ->default('active'),
                     ])->columns(2),
             ]);
@@ -119,20 +120,12 @@ class ProductResource extends Resource
                     ->label('Sold'),
                 Tables\Columns\ToggleColumn::make('featured'),
                 Tables\Columns\SelectColumn::make('status')
-                    ->options([
-                        'active' => 'Active',
-                        'draft' => 'Draft',
-                        'inactive' => 'Inactive',
-                    ])
+                    ->options(Product::STATUSES)
                     ->sortable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->options([
-                        'active' => 'Active',
-                        'draft' => 'Draft',
-                        'inactive' => 'Inactive',
-                    ]),
+                    ->options(Product::STATUSES),
                 Tables\Filters\SelectFilter::make('category')
                     ->relationship('category', 'name'),
                 Tables\Filters\TernaryFilter::make('featured'),
@@ -147,7 +140,7 @@ class ProductResource extends Resource
                         Notification::make()
                             ->success()
                             ->title('Deleted')
-                            ->body('Post has been deleted successfully.')
+                            ->body('Product has been deleted successfully.')
                     ),
                 Tables\Actions\ForceDeleteAction::make()
                     ->requiresConfirmation()
@@ -160,14 +153,14 @@ class ProductResource extends Resource
                         Notification::make()
                             ->success()
                             ->title('Deleted Permanently')
-                            ->body('Post has been permanently deleted.')
+                            ->body('Product has been permanently deleted.')
                     ),
                 Tables\Actions\RestoreAction::make() // Untuk restore soft deleted items
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title('Restored')
-                            ->body('Post has been restored successfully.')
+                            ->body('Product has been restored successfully.')
                     ),
             ])
             ->bulkActions([

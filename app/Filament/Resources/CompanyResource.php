@@ -16,7 +16,7 @@ class CompanyResource extends Resource
 {
     protected static ?string $model = Company::class;
     protected static ?string $navigationIcon = 'heroicon-o-building-office';
-    protected static ?string $navigationGroup = 'Website Management';
+    protected static ?string $navigationGroup = 'Content';
 
     public static function form(Form $form): Form
     {
@@ -40,14 +40,53 @@ class CompanyResource extends Resource
                             ->required()
                             ->maxLength(255),
                     ]),
+                Forms\Components\Section::make('Visi, Misi & Sejarah')
+                    ->description('Konten ini ditampilkan di halaman About. Kosongkan untuk menyembunyikan bagian terkait.')
+                    ->schema([
+                        Forms\Components\Textarea::make('vision')
+                            ->label('Visi')
+                            ->rows(3)
+                            ->maxLength(65535),
+                        Forms\Components\Textarea::make('mission')
+                            ->label('Misi')
+                            ->rows(3)
+                            ->maxLength(65535),
+                        Forms\Components\Textarea::make('history')
+                            ->label('Sejarah')
+                            ->helperText('Ringkasan singkat; ditampilkan sebelum linimasa sejarah yang sudah ada.')
+                            ->rows(5)
+                            ->maxLength(65535),
+                    ]),
+                Forms\Components\Section::make('Rekening Bank')
+                    ->description('Ditampilkan sebagai instruksi transfer di halaman checkout.')
+                    ->schema([
+                        Forms\Components\TextInput::make('bank_name')
+                            ->label('Nama Bank')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('bank_account_number')
+                            ->label('Nomor Rekening')
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('bank_account_holder')
+                            ->label('Atas Nama')
+                            ->maxLength(255),
+                    ])
+                    ->columns(3),
                 Forms\Components\Section::make('Foto dan Gambar')
                     ->schema([
                         Forms\Components\FileUpload::make('logo')
                             ->image()
-                            ->directory('company'),
+                            ->directory('company')
+                            ->maxSize(4096)
+                            ->saveUploadedFileUsing(
+                                fn ($file) => \App\Helpers\ImageHelper::optimizeAndStore($file, 'company', maxWidth: 1000, maxHeight: 1000, quality: 90)
+                            ),
                         Forms\Components\FileUpload::make('image')
                             ->image()
-                            ->directory('company'),
+                            ->directory('company')
+                            ->maxSize(8192)
+                            ->saveUploadedFileUsing(
+                                fn ($file) => \App\Helpers\ImageHelper::optimizeAndStore($file, 'company', maxWidth: 1920, maxHeight: 1920, quality: 82)
+                            ),
                     ]),
             ]);
     }

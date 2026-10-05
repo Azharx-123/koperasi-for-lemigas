@@ -3,22 +3,21 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PaymentConfirmationResource\Pages;
-use App\Models\Payment_confirmation;
+use App\Models\PaymentConfirmation;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PaymentConfirmationResource extends Resource
 {
-    protected static ?string $model = Payment_confirmation::class;
+    protected static ?string $model = PaymentConfirmation::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-credit-card';
-
-    protected static ?string $navigationGroup = 'E-Commerce';
+    protected static ?string $navigationGroup = 'Sales';
 
     protected static ?int $navigationSort = 3;
 
@@ -52,6 +51,10 @@ class PaymentConfirmationResource extends Resource
                     ->image()
                     ->directory('payment_proofs')
                     ->visibility('public')
+                    ->maxSize(8192)
+                    ->saveUploadedFileUsing(
+                        fn ($file) => \App\Helpers\ImageHelper::optimizeAndStore($file, 'payment_proofs', maxWidth: 1600, maxHeight: 1600, quality: 85)
+                    )
                     ->required(),
                 Forms\Components\Textarea::make('notes'),
                 Forms\Components\Textarea::make('admin_notes'),
@@ -71,8 +74,9 @@ class PaymentConfirmationResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('account_name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('formattedAmount')
+                Tables\Columns\TextColumn::make('amount')
                     ->label('Amount')
+                    ->money('IDR')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('transfer_date')
                     ->date()
@@ -117,15 +121,18 @@ class PaymentConfirmationResource extends Resource
             ])
             ->actions([
                 Tables\Actions\Action::make('verify')
-                    ->action(function ($record) {
-                        $record->update([
-                            'verified_at' => now(),
-                        ]);
-                        // Also update order payment_status
-                        $record->order->update([
-                            'payment_status' => 'paid',
-                            'status' => 'processing',
-                        ]);
+                    ->action(function ($record, Tables\Actions\Action $action) {
+                        try {
+                            $record->verify();
+                        } catch (\RuntimeException $e) {
+                            Notification::make()
+                                ->title('Verifikasi gagal')
+                                ->body($e->getMessage())
+                                ->danger()
+                                ->send();
+
+                            $action->halt();
+                        }
                     })
                     ->visible(fn($record) => is_null($record->verified_at))
                     ->requiresConfirmation()
@@ -139,15 +146,27 @@ class PaymentConfirmationResource extends Resource
                     Tables\Actions\BulkAction::make('verify_selected')
                         ->label('Verify Selected')
                         ->action(function ($records) {
+                            $errors = [];
+
                             foreach ($records as $record) {
-                                $record->update([
-                                    'verified_at' => now(),
-                                ]);
-                                // Also update order payment_status
-                                $record->order->update([
-                                    'payment_status' => 'paid',
-                                    'status' => 'processing',
-                                ]);
+                                try {
+                                    $record->verify();
+                                } catch (\RuntimeException $e) {
+                                    $errors[] = ($record->order->order_number ?? "#{$record->id}") . ': ' . $e->getMessage();
+                                }
+                            }
+
+                            if ($errors) {
+                                Notification::make()
+                                    ->title(count($errors) . ' pembayaran gagal diverifikasi')
+                                    ->body(implode("\n", $errors))
+                                    ->danger()
+                                    ->send();
+                            } else {
+                                Notification::make()
+                                    ->title('Pembayaran terpilih berhasil diverifikasi')
+                                    ->success()
+                                    ->send();
                             }
                         })
                         ->requiresConfirmation()
@@ -161,9 +180,7 @@ class PaymentConfirmationResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

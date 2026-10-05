@@ -1,66 +1,70 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# KEP — Koperasi Energi dan Pertambangan
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Company profile sekaligus e-commerce sederhana untuk **Koperasi Energi dan
+Pertambangan (KEP)** — sebuah koperasi **fiktif**, dibangun dengan Laravel
+dan Filament sebagai proyek portofolio.
 
-## About Laravel
+> **Catatan:** KEP beserta seluruh data di dalamnya (profil, sejarah, nomor
+> legalitas, produk, mitra/sponsor, testimoni) adalah **fiktif** dan dibuat
+> khusus untuk keperluan demo portofolio ini. Nomor rekening, alamat, dan
+> kontak yang tampil bukan data nyata.
+m prune
+## Fitur
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Halaman publik** — beranda dengan hero carousel, profil koperasi
+  (visi/misi/sejarah), katalog & detail produk, keranjang, checkout dengan
+  konfirmasi pembayaran manual, riwayat pesanan, dan ulasan produk.
+- **Autentikasi** — registrasi/login (Laravel Breeze), verifikasi email, dan
+  Two-Factor Authentication.
+- **Panel admin (Filament)** — pengelolaan produk & kategori, pesanan,
+  konfirmasi pembayaran, ulasan, carousel, fitur unggulan, persona
+  target pengguna, sponsor/mitra, dan profil koperasi.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Tumpukan Teknologi
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Laravel 11 (PHP 8.2+) · Filament 3
+- Bootstrap 5, AOS, Font Awesome 5 — dibundel lewat Vite (bukan CDN)
+- MySQL/MariaDB (atau driver lain yang didukung Laravel)
 
-## Learning Laravel
+## Menjalankan di Lokal
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+```bash
+composer install
+npm install
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+cp .env.example .env
+php artisan key:generate
+# Sesuaikan koneksi database di .env, lalu:
+php artisan migrate
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+# Password akun admin WAJIB diset eksplisit di luar local/testing;
+# di local, boleh dikosongkan dan seeder akan memakai "password" sbg default.
+php artisan db:seed
 
-## Laravel Sponsors
+php artisan storage:link
+npm run build   # atau `npm run dev` saat development
+php artisan serve
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Setelah seed, tersedia dua akun contoh: `test@example.com` (user biasa) dan
+`admin@example.com` (role admin, password sesuai `ADMIN_SEED_PASSWORD` di
+`.env`, atau `password` bila variabel itu tidak diset di environment local).
 
-### Premium Partners
+## Tentang Data Demo
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+Seeder (`database/seeders/`) mengisi:
 
-## Contributing
+- **CompanySeeder** — profil koperasi fiktif.
+- **CategorySeeder** & **ProductSeeder** — 5 kategori dan 8 produk contoh,
+  memakai foto produk generik (tanpa watermark toko/marketplace pihak lain).
+- **FeatureSeeder**, **PersonaSeeder** — konten teks untuk section
+  "Mengapa Memilih Kami" dan target pengguna di beranda.
+- **CarouselItemSeeder** — 6 slide hero dengan foto stok bebas identitas.
+- **SponsorSeeder** — 6 logo mitra, seluruhnya **nama & logo rekaan**
+  (`storage/app/public/sponsors/*.svg`), bukan brand asli — supaya tidak
+  terkesan diendorse perusahaan tertentu.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Bila menambah upload baru lewat panel admin saat development, ingat bahwa
+`storage/app/public/.gitignore` sengaja hanya meng-whitelist file demo di
+atas; file baru tidak otomatis ikut ter-commit ke git kecuali ditambahkan
+manual ke whitelist tersebut.

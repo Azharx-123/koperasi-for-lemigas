@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements MustVerifyEmail, FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -23,7 +23,19 @@ class User extends Authenticatable implements FilamentUser
         'name',
         'email',
         'password',
-        'role',
+        // #11: alamat pengiriman di profil, dipakai buat prefill form
+        // checkout (lihat CheckoutController::profileForPrefill()).
+        'phone',
+        'company',
+        'address',
+        'province',
+        'city',
+        'district',
+        'postal_code',
+        // 'role' is deliberately NOT here: it's set directly via
+        // $user->role = ... (see DatabaseSeeder), never through mass
+        // assignment, so a controller that fills from request input can
+        // never accidentally let a user set their own role.
     ];
 
     /**
@@ -34,6 +46,8 @@ class User extends Authenticatable implements FilamentUser
     protected $hidden = [
         'password',
         'remember_token',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
     ];
 
     /**
@@ -46,10 +60,26 @@ class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            // Laravel's built-in encrypted casts (uses APP_KEY) — the
+            // secret and recovery codes are never stored in plaintext.
+            'two_factor_secret' => 'encrypted',
+            'two_factor_recovery_codes' => 'encrypted:array',
+            'two_factor_confirmed_at' => 'datetime',
         ];
     }
 
-       public function canAccessPanel(Panel $panel): bool
+    /**
+     * True only once a generated secret has actually been confirmed with a
+     * real code (see TwoFactorSettings) — a secret that exists but was
+     * never confirmed doesn't count, so a half-finished setup can't
+     * accidentally lock the admin out.
+     */
+    public function hasTwoFactorEnabled(): bool
+    {
+        return ! is_null($this->two_factor_secret) && ! is_null($this->two_factor_confirmed_at);
+    }
+
+    public function canAccessPanel(Panel $panel): bool
     {
         return $this->role === 'admin';
     }
@@ -58,6 +88,14 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->hasOne(Cart::class);
     }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class);
+    }
 }
-
-

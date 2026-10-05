@@ -16,15 +16,13 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class RatingResource extends Resource
 {
     protected static ?string $model = Rating::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-star';
-
-    protected static ?string $navigationGroup = 'Shop Management';
+    protected static ?string $navigationGroup = 'Catalog';
 
     protected static ?int $navigationSort = 4;
 
@@ -54,7 +52,7 @@ class RatingResource extends Resource
                             ->relationship('user', 'name')
                             ->searchable()
                             ->preload()
-                            ->required(),
+                            ->helperText('Kosong berarti reviewer sudah menghapus akunnya.'),
 
                         Forms\Components\Select::make('score')
                             ->options([
@@ -109,17 +107,14 @@ class RatingResource extends Resource
 
                 TextColumn::make('user.name')
                     ->label('User')
+                    ->placeholder('Pengguna terhapus')
                     ->searchable(),
 
                 IconColumn::make('score')
                     ->label('Rating')
                     ->sortable()
                     ->icon(fn(int $state): string => match ($state) {
-                        5 => 'heroicon-s-star',
-                        4 => 'heroicon-s-star',
-                        3 => 'heroicon-s-star',
-                        2 => 'heroicon-s-star',
-                        1 => 'heroicon-s-star',
+                        1, 2, 3, 4, 5 => 'heroicon-s-star',
                         default => 'heroicon-o-star',
                     })
                     ->color(fn(int $state): string => match ($state) {
@@ -191,10 +186,7 @@ class RatingResource extends Resource
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->requiresConfirmation()
-                    ->action(function (Rating $record): void {
-                        $record->update(['is_approved' => true]);
-                        $record->product->refreshRatingCache();
-                    })
+                    ->action(fn(Rating $record) => $record->update(['is_approved' => true]))
                     ->visible(fn(Rating $record): bool => $record->is_approved === false),
 
                 Tables\Actions\Action::make('reject')
@@ -202,10 +194,7 @@ class RatingResource extends Resource
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
                     ->requiresConfirmation()
-                    ->action(function (Rating $record): void {
-                        $record->update(['is_approved' => false]);
-                        $record->product->refreshRatingCache();
-                    })
+                    ->action(fn(Rating $record) => $record->update(['is_approved' => false]))
                     ->visible(fn(Rating $record): bool => $record->is_approved === true),
             ])
             ->bulkActions([
@@ -214,29 +203,13 @@ class RatingResource extends Resource
                         ->label('Setujui Terpilih')
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
-                        ->action(function ($records): void {
-                            $productIds = $records->pluck('product_id')->unique()->toArray();
-                            $records->each(fn($record) => $record->update(['is_approved' => true]));
-
-                            // Refresh rating cache untuk setiap produk
-                            foreach ($productIds as $productId) {
-                                \App\Models\Product::find($productId)?->refreshRatingCache();
-                            }
-                        }),
+                        ->action(fn($records) => $records->each(fn($record) => $record->update(['is_approved' => true]))),
 
                     Tables\Actions\BulkAction::make('reject_selected')
                         ->label('Tolak Terpilih')
                         ->icon('heroicon-o-x-circle')
                         ->color('danger')
-                        ->action(function ($records): void {
-                            $productIds = $records->pluck('product_id')->unique()->toArray();
-                            $records->each(fn($record) => $record->update(['is_approved' => false]));
-
-                            // Refresh rating cache untuk setiap produk
-                            foreach ($productIds as $productId) {
-                                \App\Models\Product::find($productId)?->refreshRatingCache();
-                            }
-                        }),
+                        ->action(fn($records) => $records->each(fn($record) => $record->update(['is_approved' => false]))),
 
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
@@ -246,9 +219,7 @@ class RatingResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

@@ -1,0 +1,299 @@
+        /* Elegant Separator Style */
+        .elegant-separator {
+            height: 3px;
+            background: linear-gradient(90deg, transparent 0%, rgb(var(--yellow-primary)) 50%, transparent 100%);
+            width: 150px;
+            margin: 2rem auto;
+        }
+
+        /* Section Styles */
+        .section-title-elegant {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: rgb(var(--black));
+            margin-bottom: var(--spacing-sm);
+            position: relative;
+            text-align: center;
+        }
+
+        /* Checkout Card Styles */
+        .checkout-card {
+            background: white;
+            border-radius: var(--radius-panel);
+            overflow: hidden;
+            box-shadow: var(--shadow-card-hover);
+            transition: all 0.3s ease;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .checkout-card-header {
+            background-color: rgb(var(--gray-100));
+            padding: var(--spacing-md);
+            border-bottom: 1px solid rgb(var(--gray-200));
+        }
+
+        .checkout-card-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0;
+            color: rgb(var(--gray-800));
+        }
+
+        .checkout-card-body {
+            padding: var(--spacing-lg);
+        }
+
+        /* Order Summary Styles */
+        .order-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid rgb(var(--gray-200));
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .order-item-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: var(--radius-card);
+            margin-right: var(--spacing-md);
+        }
+
+        .order-item-details {
+            flex-grow: 1;
+        }
+
+        .order-item-name {
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .order-item-price {
+            color: rgb(var(--gray-600));
+            font-size: 0.9rem;
+        }
+
+        .order-item-quantity {
+            background-color: rgb(var(--yellow-primary));
+            padding: 0.3rem 0.8rem;
+            border-radius: var(--radius-pill);
+            font-size: 0.9rem;
+            margin: 0.5rem 0.5rem 0 0.5rem;
+            text-align: center;
+        }
+
+        .order-item-total {
+            font-weight: 600;
+            color: rgb(var(--yellow-dark));
+            font-size: 1.1rem;
+            margin-left: var(--spacing-sm);
+        }
+
+        /* Order Summary Totals */
+        .order-summary-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .order-summary-label {
+            font-weight: 500;
+            color: rgb(var(--gray-600));
+        }
+
+        .order-summary-value {
+            font-weight: 600;
+        }
+
+        .order-total {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: rgb(var(--yellow-dark));
+        }
+
+        /* Form Styles */
+        .form-label {
+            font-weight: 500;
+            margin-bottom: var(--spacing-xs);
+            color: rgb(var(--gray-800));
+        }
+
+        .form-control {
+            border-radius: var(--radius-card);
+            padding: 0.75rem 1rem;
+            border: 1px solid rgb(var(--gray-300));
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(var(--yellow-primary), 0.25);
+            border-color: rgb(var(--yellow-primary));
+        }
+
+        .form-section {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        /* Button Styles */
+        .btn-checkout {
+            width: 100%;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: white;
+            color: rgb(var(--gray-800));
+            border: 2px solid rgb(var(--gray-300));
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-radius: var(--radius-pill);
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-back:hover {
+            background-color: rgb(var(--gray-100));
+            color: rgb(var(--gray-800));
+        }
+
+        /* #10: Banner ajakan login untuk tamu */
+        .checkout-guest-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+        }
+
+        /* #11: Toggle "Gunakan data profil saya" / hint kalau belum ada profil */
+        .use-profile-toggle {
+            padding: 0.75rem 1rem;
+            background-color: rgb(var(--gray-100));
+            border-radius: var(--radius-card);
+        }
+
+        .use-profile-toggle .form-check-input {
+            cursor: pointer;
+        }
+
+        .use-profile-toggle .form-check-label {
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .profile-hint a {
+            color: rgb(var(--yellow-dark));
+            font-weight: 600;
+        }
+
+        /* #12: Pemilih metode pembayaran (Transfer Bank / QRIS / E-Wallet) */
+        .payment-method-options {
+            display: flex;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .payment-method-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1 1 160px;
+            padding: 0.85rem 1rem;
+            border: 2px solid rgb(var(--gray-300));
+            border-radius: var(--radius-card);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 0;
+        }
+
+        .payment-method-option:hover {
+            border-color: rgb(var(--gray-600));
+        }
+
+        .payment-method-option input[type="radio"] {
+            accent-color: rgb(var(--yellow-primary));
+            width: 1.1rem;
+            height: 1.1rem;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        /* .selected is toggled by JS; :has() is a progressive-enhancement
+           fallback for browsers that support it without needing the JS to
+           run first. */
+        .payment-method-option.selected,
+        .payment-method-option:has(input:checked) {
+            border-color: rgb(var(--yellow-primary));
+            background-color: rgba(var(--yellow-primary), 0.08);
+        }
+
+        .payment-method-option-label {
+            font-weight: 600;
+            color: rgb(var(--gray-800));
+            cursor: pointer;
+        }
+
+        .payment-method-details {
+            margin-top: var(--spacing-sm);
+        }
+
+        /* Kotak "QR" QRIS — dekoratif saja, lihat checkout/index.blade.php:
+           label "(Simulasi)" selalu menyertainya, ini BUKAN kode QR
+           sungguhan yang bisa dipindai. */
+        .qris-code-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .qris-simulation-svg {
+            width: 160px;
+            height: 160px;
+            border: 1px solid rgb(var(--gray-300));
+            border-radius: var(--radius-card);
+        }
+
+        .qris-simulation-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: rgb(var(--gray-600));
+            letter-spacing: 0.3px;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .section-title-elegant {
+                font-size: 2rem;
+            }
+
+            .order-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .order-item-image {
+                margin-bottom: var(--spacing-sm);
+                margin-right: 0;
+            }
+
+            .order-item-total {
+                margin-left: 0;
+                margin-top: var(--spacing-xs);
+            }
+
+            .checkout-card-body {
+                padding: var(--spacing-md);
+            }
+        }

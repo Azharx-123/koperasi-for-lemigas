@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CartResource\Pages;
 use App\Filament\Resources\CartResource\RelationManagers;
+use App\Helpers\CurrencyHelper;
 use App\Models\Cart;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -11,15 +12,13 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CartResource extends Resource
 {
     protected static ?string $model = Cart::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
-
-    protected static ?string $navigationGroup = 'E-Commerce';
+    protected static ?string $navigationGroup = 'Sales';
 
     protected static ?int $navigationSort = 2;
 
@@ -48,7 +47,7 @@ class CartResource extends Resource
                     ->label('Products'),
                 Tables\Columns\TextColumn::make('total_value')
                     ->label('Total Value')
-                    ->getStateUsing(fn(Cart $record): string => 'Rp ' . number_format($record->getTotal(), 0, ',', '.')),
+                    ->getStateUsing(fn(Cart $record): string => CurrencyHelper::formatRupiah($record->getTotal())),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime('d M Y H:i')
                     ->sortable(),
@@ -79,7 +78,6 @@ class CartResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
@@ -100,9 +98,7 @@ class CartResource extends Resource
     {
         return [
             'index' => Pages\ListCarts::route('/'),
-            'create' => Pages\CreateCart::route('/create'),
-           'view' => Pages\ViewCart::route('/{record}'),
-            'edit' => Pages\EditCart::route('/{record}/edit'),
+            'view' => Pages\ViewCart::route('/{record}'),
         ];
     }
 }

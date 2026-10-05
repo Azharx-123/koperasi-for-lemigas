@@ -1,0 +1,9 @@
+<svg viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fictional sponsor logo created for this portfolio demo (no real brand). -->
+  <g transform="translate(16,20)">
+    <circle cx="30" cy="35" r="30" fill="#2E8B57" opacity="0.15"/>
+    <path d="M30,8 C46,8 58,22 58,35 C58,48 46,62 30,62 C34,50 34,20 30,8 Z" fill="#2E8B57"/>
+  </g>
+  <text x="92" y="50" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="28" fill="#1F3D2E" letter-spacing="1">CIPTA</text>
+  <text x="92" y="78" font-family="Arial, Helvetica, sans-serif" font-weight="500" font-size="22" fill="#2E8B57" letter-spacing="4">DAYA</text>
+</svg>

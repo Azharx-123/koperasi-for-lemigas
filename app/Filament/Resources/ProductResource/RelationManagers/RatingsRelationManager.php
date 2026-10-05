@@ -7,8 +7,6 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class RatingsRelationManager extends RelationManager
 {
@@ -24,7 +22,7 @@ class RatingsRelationManager extends RelationManager
                     ->relationship('user', 'name')
                     ->searchable()
                     ->preload()
-                    ->required(),
+                    ->helperText('Kosong berarti reviewer sudah menghapus akunnya.'),
 
                 Forms\Components\Select::make('score')
                     ->options([
@@ -57,6 +55,7 @@ class RatingsRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('User')
+                    ->placeholder('Pengguna terhapus')
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('score')
@@ -85,53 +84,29 @@ class RatingsRelationManager extends RelationManager
                     ->dateTime('d M Y')
                     ->sortable(),
             ])
-            ->filters([
-                //
-            ])
+            ->filters([])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
-                    ->after(function () {
-                        // Refresh product rating cache
-                        $this->getOwnerRecord()->refreshRatingCache();
-                    }),
+                Tables\Actions\CreateAction::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
-                    ->after(function () {
-                        // Refresh product rating cache
-                        $this->getOwnerRecord()->refreshRatingCache();
-                    }),
-                Tables\Actions\DeleteAction::make()
-                    ->after(function () {
-                        // Refresh product rating cache
-                        $this->getOwnerRecord()->refreshRatingCache();
-                    }),
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
-                        ->after(function () {
-                            // Refresh product rating cache
-                            $this->getOwnerRecord()->refreshRatingCache();
-                        }),
+                    Tables\Actions\DeleteBulkAction::make(),
 
                     Tables\Actions\BulkAction::make('approve_selected')
                         ->label('Setujui Terpilih')
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
-                        ->action(function ($records) {
-                            $records->each(fn($record) => $record->update(['is_approved' => true]));
-                            $this->getOwnerRecord()->refreshRatingCache();
-                        }),
+                        ->action(fn($records) => $records->each(fn($record) => $record->update(['is_approved' => true]))),
 
                     Tables\Actions\BulkAction::make('reject_selected')
                         ->label('Tolak Terpilih')
                         ->icon('heroicon-o-x-circle')
                         ->color('danger')
-                        ->action(function ($records) {
-                            $records->each(fn($record) => $record->update(['is_approved' => false]));
-                            $this->getOwnerRecord()->refreshRatingCache();
-                        }),
+                        ->action(fn($records) => $records->each(fn($record) => $record->update(['is_approved' => false]))),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

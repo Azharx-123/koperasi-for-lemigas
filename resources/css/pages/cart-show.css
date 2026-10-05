@@ -1,0 +1,545 @@
+        .scroll-top-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: var(--radius-full);
+            background-color: rgb(var(--yellow-primary));
+            color: rgb(0, 0, 0);
+            border: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .scroll-top-btn.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .scroll-top-btn:hover {
+            background-color: rgb(var(--yellow-dark));
+            transform: translateY(-5px);
+        }
+
+        .scroll-top-btn i {
+            font-size: 1.2rem;
+        }
+
+        /* Cart Section */
+        .cart-section {
+            padding: 3rem 0;
+            background-color: rgb(var(--gray-100));
+
+            /* Fill exactly the space left between navbar and footer (see
+               body/main flex rules in app.css) instead of guessing a fixed
+               pixel offset for their combined height — then center the
+               content in it, so a short cart (or the empty state) reads as
+               one tidy screen instead of top-aligned with a long gap
+               before the footer. A cart with many items still grows
+               normally past one screen; nothing here clips or hides items,
+               it only removes *unnecessary* empty space. */
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .cart-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: var(--spacing-md);
+            color: rgb(var(--black));
+        }
+
+        .cart-separator {
+            height: 3px;
+            background: linear-gradient(90deg, transparent 0%, rgb(var(--yellow-primary)) 50%, transparent 100%);
+            width: 150px;
+            margin: 0 auto 3rem;
+        }
+
+        .cart-card {
+            background: white;
+            border-radius: var(--radius-hero);
+            overflow: hidden;
+            box-shadow: var(--shadow-card-hover);
+            margin-bottom: var(--spacing-lg);
+            border: none;
+        }
+
+        .cart-table {
+            margin-bottom: 0;
+        }
+
+        /* Desktop only: let a long item list scroll inside the card rather
+           than stretching the whole page — keeps navbar/footer in view
+           instead of pushing the footer arbitrarily far down. Below 992px
+           the table already turns into stacked cards (see the media query
+           further down), where a natural full-page scroll reads better
+           than a short internal scroll box. */
+        @media (min-width: 992px) {
+            .cart-card .table-responsive {
+                max-height: 48vh;
+                overflow-y: auto;
+            }
+
+            .cart-card .table-responsive thead th {
+                position: sticky;
+                top: 0;
+                background: white;
+                z-index: 1;
+            }
+        }
+
+        .cart-table th {
+            border-top: none;
+            border-bottom: 2px solid rgb(var(--gray-200));
+            font-weight: 600;
+            color: rgb(var(--gray-800));
+            padding: 1.5rem 1rem;
+        }
+
+        .cart-table td {
+            padding: 1.5rem 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid rgb(var(--gray-200));
+        }
+
+        .cart-item-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: var(--radius-card);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .cart-item-image:hover {
+            transform: scale(1.05);
+        }
+
+        .cart-item-name {
+            font-weight: 500;
+            color: rgb(var(--black));
+            transition: color 0.3s ease;
+        }
+
+        .cart-item-name:hover {
+            color: rgb(var(--yellow-dark));
+        }
+
+        .cart-quantity-input {
+            width: 100px;
+            border-radius: var(--radius-pill);
+            border: 2px solid rgb(var(--gray-300));
+            padding: 0.5rem 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .cart-quantity-input:focus {
+            border-color: rgb(var(--yellow-primary));
+            box-shadow: 0 0 0 0.2rem rgba(var(--yellow-primary), 0.25);
+        }
+
+        /* checkout-btn saat sedang menyimpan perubahan qty (lihat JS) —
+           tombol update-per-baris lama sudah dihapus, digantikan tombol ini. */
+        .checkout-btn.disabled {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .cart-update-error {
+            margin-top: var(--spacing-sm);
+            padding: 0.85rem 1.25rem;
+            border-radius: var(--radius-card);
+            background-color: rgba(var(--danger), 0.1);
+            color: rgb(var(--danger-dark));
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .cart-price,
+        .cart-total {
+            font-weight: 600;
+            color: rgb(var(--gray-800));
+        }
+
+        .cart-item-total {
+            font-weight: 700;
+            color: rgb(var(--yellow-dark));
+        }
+
+        .cart-remove-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgb(var(--gray-100));
+            color: rgb(var(--danger));
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .cart-remove-btn:hover {
+            background: rgb(var(--danger));
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .cart-footer {
+            background: rgb(var(--gray-100));
+            padding: var(--spacing-md);
+            border-radius: 0 0 var(--radius-hero) var(--radius-hero);
+        }
+
+        .cart-total-row {
+            font-size: 1.25rem;
+            color: rgb(var(--black));
+        }
+
+        .cart-total-amount {
+            font-weight: 700;
+            color: rgb(var(--yellow-dark));
+            font-size: 1.5rem;
+        }
+
+        .cart-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: var(--spacing-lg);
+        }
+
+        .continue-shopping-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.875rem 2rem;
+            background: white;
+            color: rgb(var(--black));
+            text-decoration: none;
+            border-radius: var(--radius-pill);
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 2px solid rgb(var(--gray-300));
+        }
+
+        .continue-shopping-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-color: rgb(var(--gray-600));
+            color: rgb(var(--black));
+        }
+
+        .checkout-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.875rem 2rem;
+            background: linear-gradient(45deg, rgb(var(--yellow-dark)), rgb(var(--yellow-primary)));
+            color: white;
+            text-decoration: none;
+            border-radius: var(--radius-pill);
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: var(--shadow-yellow-glow);
+            position: relative;
+            overflow: hidden;
+            border: none;
+        }
+
+        .checkout-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgb(var(--yellow-primary)), rgb(var(--yellow-dark)));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .checkout-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-yellow-glow-lg);
+            color: white;
+        }
+
+        .checkout-btn:hover::before {
+            opacity: 1;
+        }
+
+        .btn-text {
+            position: relative;
+            z-index: 1;
+            margin-left: var(--spacing-xs);
+        }
+
+        .icon-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Empty Cart Styles */
+        .empty-cart-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 2rem;
+            background: white;
+            border-radius: var(--radius-hero);
+            box-shadow: var(--shadow-card-hover);
+        }
+
+        .empty-cart-icon {
+            width: 60px;
+            height: 60px;
+            background: rgb(var(--gray-100));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-full);
+            margin-bottom: var(--spacing-lg);
+            animation: pulseIcon 2s infinite;
+        }
+
+        @keyframes pulseIcon {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            }
+
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            }
+        }
+
+        .empty-cart-icon i {
+            font-size: 3rem;
+            color: rgb(var(--gray-600));
+        }
+
+        .empty-cart-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+            color: rgb(var(--gray-800));
+        }
+
+        .empty-cart-text {
+            font-size: 1.1rem;
+            color: rgb(var(--gray-600));
+            margin-bottom: var(--spacing-lg);
+            text-align: center;
+        }
+
+        .start-shopping-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 1rem 2.5rem;
+            background: linear-gradient(45deg, rgb(var(--yellow-dark)), rgb(var(--yellow-primary)));
+            color: white;
+            text-decoration: none;
+            border-radius: var(--radius-pill);
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: var(--shadow-yellow-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .start-shopping-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgb(var(--yellow-primary)), rgb(var(--yellow-dark)));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .start-shopping-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-yellow-glow-lg);
+            color: white;
+        }
+
+        .start-shopping-btn:hover::before {
+            opacity: 1;
+        }
+
+        .start-shopping-text {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Alert Styles */
+        .alert-elegant {
+            border: none;
+            border-radius: var(--radius-panel);
+            padding: 1.25rem;
+            margin-bottom: var(--spacing-lg);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .alert-elegant::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+        }
+
+        .alert-elegant.alert-success {
+            background-color: rgba(var(--success), 0.1);
+        }
+
+        .alert-elegant.alert-success::before {
+            background-color: rgb(var(--success));
+        }
+
+        /* Responsive styles */
+        @media (max-width: 992px) {
+            .cart-section {
+                padding: 80px 0;
+            }
+
+            .cart-title {
+                font-size: 2.2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .cart-section {
+                padding: 60px 0;
+            }
+
+            .cart-title {
+                font-size: 2rem;
+            }
+
+            .cart-item-image {
+                width: 80px;
+                height: 80px;
+            }
+
+            /* Cart table -> stacked cards, so items don't need horizontal
+               scrolling to reach the quantity/remove controls on phones. */
+            .cart-table thead {
+                display: none;
+            }
+
+            .cart-table,
+            .cart-table tbody,
+            .cart-table tr,
+            .cart-table td {
+                display: block;
+                width: 100%;
+            }
+
+            .cart-table tr {
+                padding: 1rem 1rem 1.25rem;
+                border-bottom: 8px solid rgb(var(--gray-100));
+            }
+
+            .cart-table td {
+                padding: 0.5rem 0;
+                border-bottom: none;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 1rem;
+            }
+
+            .cart-table td::before {
+                content: attr(data-label);
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+                color: rgb(var(--gray-600));
+                flex-shrink: 0;
+            }
+
+            .cart-table td:first-child {
+                display: block;
+                padding-bottom: 0.75rem;
+            }
+
+            .cart-table td:first-child::before {
+                content: none;
+            }
+
+            .cart-table .cart-quantity-input {
+                width: 80px;
+            }
+
+            .cart-actions {
+                flex-direction: column;
+                gap: var(--spacing-sm);
+            }
+
+            .continue-shopping-btn,
+            .checkout-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .empty-cart-title {
+                font-size: 1.75rem;
+            }
+        }
+
+        .history-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.875rem 2rem;
+            background: white;
+            color: rgb(var(--yellow-dark));
+            text-decoration: none;
+            border-radius: var(--radius-pill);
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 2px solid rgb(var(--yellow-primary));
+        }
+
+        .history-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            background-color: rgb(var(--yellow-light));
+            border-color: rgb(var(--yellow-dark));
+            color: rgb(var(--black));
+        }

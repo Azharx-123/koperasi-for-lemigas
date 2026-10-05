@@ -4,11 +4,10 @@ namespace App\Filament\Resources\OrderResource\RelationManagers;
 
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PaymentConfirmationRelationManager extends RelationManager
 {
@@ -36,6 +35,10 @@ class PaymentConfirmationRelationManager extends RelationManager
                     ->image()
                     ->directory('payment_proofs')
                     ->visibility('public')
+                    ->maxSize(8192)
+                    ->saveUploadedFileUsing(
+                        fn ($file) => \App\Helpers\ImageHelper::optimizeAndStore($file, 'payment_proofs', maxWidth: 1600, maxHeight: 1600, quality: 85)
+                    )
                     ->required(),
                 Forms\Components\Textarea::make('notes'),
                 Forms\Components\Textarea::make('admin_notes'),
@@ -50,8 +53,9 @@ class PaymentConfirmationRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('bank_name'),
                 Tables\Columns\TextColumn::make('account_name'),
-                Tables\Columns\TextColumn::make('formattedAmount')
-                    ->label('Amount'),
+                Tables\Columns\TextColumn::make('amount')
+                    ->label('Amount')
+                    ->money('IDR'),
                 Tables\Columns\TextColumn::make('transfer_date')
                     ->date(),
                 Tables\Columns\ImageColumn::make('proof_image')
@@ -61,23 +65,24 @@ class PaymentConfirmationRelationManager extends RelationManager
                     ->sortable()
                     ->placeholder('Not Verified'),
             ])
-            ->filters([
-                //
-            ])
+            ->filters([])
             ->headerActions([
                 Tables\Actions\CreateAction::make(),
             ])
             ->actions([
                 Tables\Actions\Action::make('verify')
-                    ->action(function ($record) {
-                        $record->update([
-                            'verified_at' => now(),
-                        ]);
-                        // Also update order payment_status
-                        $record->order->update([
-                            'payment_status' => 'paid',
-                            'status' => 'processing',
-                        ]);
+                    ->action(function ($record, Tables\Actions\Action $action) {
+                        try {
+                            $record->verify();
+                        } catch (\RuntimeException $e) {
+                            Notification::make()
+                                ->title('Verifikasi gagal')
+                                ->body($e->getMessage())
+                                ->danger()
+                                ->send();
+
+                            $action->halt();
+                        }
                     })
                     ->visible(fn($record) => is_null($record->verified_at))
                     ->requiresConfirmation()
@@ -86,8 +91,6 @@ class PaymentConfirmationRelationManager extends RelationManager
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
             ])
-            ->bulkActions([
-                //
-            ]);
+            ->bulkActions([]);
     }
 }

@@ -3,22 +3,20 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\OrderItemResource\Pages;
-use App\Models\Order_item;
+use App\Models\OrderItem;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class OrderItemResource extends Resource
 {
-    protected static ?string $model = Order_item::class;
+    protected static ?string $model = OrderItem::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
-    protected static ?string $navigationGroup = 'E-Commerce';
+    protected static ?string $navigationGroup = 'Sales';
 
     protected static ?int $navigationSort = 4;
 
@@ -35,28 +33,59 @@ class OrderItemResource extends Resource
                 Forms\Components\Select::make('order_id')
                     ->relationship('order', 'order_number')
                     ->required()
-                    ->searchable(),
+                    ->searchable()
+                    // Re-parenting an *existing* item to a different order
+                    // from this hidden-from-nav utility resource is an easy
+                    // way to accidentally corrupt an order's contents —
+                    // only allow choosing it at creation time. (Managing
+                    // items in their normal context is what
+                    // ItemsRelationManager, nested under the Order page, is
+                    // for; this resource exists as a secondary,
+                    // cross-order lookup/search view.)
+                    ->disabled(fn(string $operation): bool => $operation === 'edit'),
                 Forms\Components\Select::make('product_id')
                     ->relationship('product', 'name')
                     ->required()
-                    ->searchable(),
+                    ->searchable()
+                    ->live(),
                 Forms\Components\TextInput::make('quantity')
                     ->required()
                     ->numeric()
-                    ->minValue(1),
+                    ->minValue(1)
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function (callable $set, callable $get) {
+                        $set('total', (float) $get('price') * (int) ($get('quantity') ?? 0));
+                    })
+                    // Deliberately a warning, not a hard block: this resource
+                    // exists so an admin CAN correct stock/order data
+                    // manually, including edge cases a strict validator would
+                    // refuse. The hint below just makes the effect visible
+                    // — e.g. entering 999 against a product with 10 in stock
+                    // would otherwise silently take it to -989.
+                    ->hint(function (callable $get): ?string {
+                        $product = \App\Models\Product::find($get('product_id'));
+                        if (!$product || !$get('quantity')) {
+                            return null;
+                        }
+                        return $get('quantity') > $product->stock
+                            ? "Melebihi stok tersedia ({$product->stock})"
+                            : null;
+                    })
+                    ->hintColor('danger'),
                 Forms\Components\TextInput::make('price')
                     ->required()
                     ->numeric()
-                    ->prefix('Rp'),
+                    ->prefix('Rp')
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function (callable $set, callable $get) {
+                        $set('total', (float) ($get('price') ?? 0) * (int) $get('quantity'));
+                    }),
                 Forms\Components\TextInput::make('total')
                     ->required()
                     ->numeric()
                     ->prefix('Rp')
                     ->disabled()
-                    ->dehydrated()
-                    ->afterStateUpdated(function (callable $set, callable $get) {
-                        $set('total', $get('price') * $get('quantity'));
-                    }),
+                    ->dehydrated(),
             ]);
     }
 
@@ -67,16 +96,21 @@ class OrderItemResource extends Resource
                 Tables\Columns\TextColumn::make('order.order_number')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('product.name')
-                    ->searchable()
-                    ->sortable(),
+                Tables\Columns\TextColumn::make('display_name')
+                    ->label('Product')
+                    ->searchable(query: fn (Builder $query, string $search): Builder => $query
+                        ->where('product_name', 'like', "%{$search}%")
+                        ->orWhereHas('product', fn (Builder $q) => $q->where('name', 'like', "%{$search}%")))
+                    ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderBy('product_name', $direction)),
                 Tables\Columns\TextColumn::make('quantity')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('formattedPrice')
+                Tables\Columns\TextColumn::make('price')
                     ->label('Price')
+                    ->money('IDR')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('formattedTotal')
+                Tables\Columns\TextColumn::make('total')
                     ->label('Total')
+                    ->money('IDR')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime('d M Y H:i')
@@ -120,9 +154,7 @@ class OrderItemResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

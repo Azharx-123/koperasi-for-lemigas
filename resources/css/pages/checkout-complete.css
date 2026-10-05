@@ -1,0 +1,164 @@
+        /* Elegant Separator Style */
+        .elegant-separator {
+            height: 3px;
+            background: linear-gradient(90deg, transparent 0%, rgb(var(--yellow-primary)) 50%, transparent 100%);
+            width: 150px;
+            margin: clamp(0.5rem, 2vh, 2rem) auto;
+        }
+
+        .section-title-elegant {
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(1.5rem, 5vh, 2.5rem);
+            font-weight: 600;
+            color: rgb(var(--black));
+            margin-bottom: var(--spacing-sm);
+            position: relative;
+            text-align: center;
+        }
+
+        /* min-height (not a fixed height) fills the remaining viewport
+           below the navbar on first load without ever clipping content —
+           80px is the navbar's real rendered height, same reasoning as
+           .product-hero in products-show.css. Every size below is a
+           clamp() that compresses on shorter screens so everything through
+           the action buttons is visible without scrolling on most real
+           devices; the footer sits right after and is reached by a small
+           scroll on shorter ones, same as scrolling past a product's hero
+           to reach its description. */
+        .completion-container {
+            min-height: calc(100vh - 80px);
+            min-height: calc(100dvh - 80px);
+            padding: clamp(1rem, 4vh, 3rem) 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .success-icon {
+            width: clamp(56px, 10vh, 120px);
+            height: clamp(56px, 10vh, 120px);
+            background-color: rgba(var(--yellow-primary), 0.1);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto clamp(0.75rem, 2.5vh, 2rem);
+            animation: pulse 2s infinite;
+        }
+
+        .success-icon i {
+            font-size: clamp(1.75rem, 5vh, 7rem);
+            color: rgb(var(--yellow-dark));
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(var(--yellow-primary), 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 20px rgba(var(--yellow-primary), 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(var(--yellow-primary), 0);
+            }
+        }
+
+        .completion-message {
+            font-size: clamp(1.1rem, 3vh, 1.5rem);
+            font-weight: 600;
+            margin-bottom: clamp(0.25rem, 1vh, 1rem);
+            color: rgb(var(--gray-800));
+        }
+
+        .completion-subtext {
+            font-size: clamp(0.85rem, 2.2vh, 1.1rem);
+            color: rgb(var(--gray-600));
+            margin-bottom: clamp(0.75rem, 2.5vh, 2rem);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .order-info-card {
+            background: white;
+            border-radius: var(--radius-panel);
+            box-shadow: var(--shadow-card-hover);
+            padding: clamp(1rem, 3vh, 2rem);
+            max-width: 600px;
+            margin: 0 auto clamp(1rem, 3vh, 3rem);
+            text-align: left;
+        }
+
+        .order-info-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-bottom: 1px solid rgb(var(--gray-200));
+            padding-bottom: clamp(0.5rem, 1.5vh, 1rem);
+            margin-bottom: clamp(0.5rem, 2vh, 1.5rem);
+        }
+
+        .order-detail {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: clamp(0.35rem, 1.2vh, 1rem);
+        }
+
+        .order-label {
+            font-weight: 500;
+            color: rgb(var(--gray-600));
+        }
+
+        .order-value {
+            font-weight: 600;
+            color: rgb(var(--gray-800));
+        }
+
+        .payment-instructions {
+            background-color: rgba(var(--yellow-primary), 0.1);
+            border-radius: var(--radius-panel);
+            padding: clamp(0.75rem, 2vh, 1.5rem);
+            margin-top: clamp(0.5rem, 2vh, 1.5rem);
+            font-size: clamp(0.85rem, 2vh, 1rem);
+        }
+
+        .payment-instructions h5 {
+            font-weight: 600;
+            color: rgb(var(--yellow-dark));
+            margin-bottom: clamp(0.35rem, 1.2vh, 1rem);
+        }
+
+        .btn-action {
+            display: inline-block;
+            padding: clamp(0.6rem, 2vh, 1rem) 2rem;
+            background: linear-gradient(45deg, rgb(var(--yellow-dark)), rgb(var(--yellow-primary)));
+            color: white;
+            font-weight: 600;
+            font-size: clamp(0.9rem, 2.2vh, 1.1rem);
+            border-radius: var(--radius-pill);
+            border: none;
+            box-shadow: var(--shadow-yellow-glow);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-decoration: none;
+            margin: 0 0.5rem clamp(0.5rem, 1.5vh, 1rem);
+        }
+
+        .btn-action:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-yellow-glow-lg);
+            color: white;
+        }
+
+        .btn-outline {
+            background: white;
+            color: rgb(var(--gray-800));
+            border: 2px solid rgb(var(--gray-300));
+        }
+
+        .btn-outline:hover {
+            color: rgb(var(--gray-800));
+            background-color: rgb(var(--gray-100));
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+

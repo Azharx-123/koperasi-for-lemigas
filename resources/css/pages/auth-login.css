@@ -1,0 +1,222 @@
+        /* This page has no navbar/footer (see the Request::is('login') check
+           in layouts.app), so body's whole box is free to use here. Locked
+           to exactly one screen (height, not min-height, plus overflow
+           hidden) rather than letting content grow taller than the
+           viewport — every size below is a clamp() that compresses on
+           shorter screens instead, so nothing needs to scroll to be
+           reached. dvh accounts for mobile browsers whose address bar
+           changes the *visible* viewport height; the vh line right before
+           it is the fallback for browsers that don't support dvh yet. */
+        html {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(135deg, rgba(var(--gray-100), 0.95), rgba(255, 255, 255, 0.95));
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            border-radius: var(--radius-full);
+            background: rgba(var(--yellow-primary), 0.1);
+            z-index: -1;
+            animation: float 15s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -30%;
+            left: -30%;
+            width: 80%;
+            height: 80%;
+            border-radius: var(--radius-full);
+            background: rgba(var(--yellow-dark), 0.05);
+            z-index: -1;
+            animation: float 20s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            50% {
+                transform: translate(5%, 5%) rotate(5deg);
+            }
+
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+        }
+
+        .login-container {
+            max-width: 420px;
+            width: 100%;
+            margin: auto;
+            padding: clamp(0.5rem, 3vh, 2rem) 1rem;
+            position: relative;
+            z-index: 1;
+            /* Belt-and-braces alongside body's overflow:hidden: if the
+               card's own content is ever still taller than the viewport
+               on some extreme device, scroll inside the card rather than
+               silently clipping form fields the person can't reach. */
+            max-height: 100%;
+            overflow-y: auto;
+        }
+
+        .card {
+            border: none;
+            border-radius: var(--radius-hero);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg,
+                    rgb(var(--yellow-primary)),
+                    rgb(var(--yellow-dark)),
+                    rgb(var(--yellow-light)));
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: clamp(0.5rem, 2vh, 1.5rem);
+            position: relative;
+        }
+
+        .logo-container img {
+            height: clamp(32px, 7vh, 80px);
+            margin-bottom: clamp(0.25rem, 1vh, 0.5rem);
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+            transition: transform 0.3s ease;
+        }
+
+        .logo-container img:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-container h4 {
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(1rem, 3vh, 1.5rem);
+            font-weight: 600;
+            color: rgb(var(--gray-800));
+            margin-bottom: 0.25rem;
+        }
+
+        .logo-container p {
+            font-size: clamp(0.8rem, 2vh, 1rem);
+            margin-bottom: 0;
+        }
+
+        .card-body {
+            padding: clamp(0.85rem, 3vh, 1.5rem);
+        }
+
+        /* Scoped to .login-container so this only tightens the login
+           form's own vertical rhythm (labels, inputs, the submit button's
+           wrapper) — not every .mb-4 utility Bootstrap ships elsewhere.
+           Two classes beats Bootstrap's single-class .mb-4 on specificity
+           alone, so this wins without needing !important. */
+        .login-container .mb-4 {
+            margin-bottom: clamp(0.5rem, 2.2vh, 1.5rem);
+        }
+
+        .form-control {
+            border: 2px solid rgb(var(--gray-200));
+            border-radius: var(--radius-card);
+            padding: clamp(0.45rem, 1.6vh, 0.8rem) 1rem;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus {
+            box-shadow: var(--shadow-focus-ring);
+            border-color: rgb(var(--yellow-primary));
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: rgb(var(--gray-800));
+            margin-bottom: clamp(0.15rem, 0.6vh, 0.5rem);
+        }
+
+        .login-container .btn-primary {
+            padding: clamp(0.5rem, 1.8vh, 0.8rem) 1.5rem;
+        }
+
+        .login-container .form-check {
+            margin-bottom: clamp(0.5rem, 2.2vh, 1.5rem);
+        }
+
+        .form-check-input:checked {
+            background-color: rgb(var(--yellow-primary));
+            border-color: rgb(var(--yellow-primary));
+        }
+
+        .form-check-input:focus {
+            box-shadow: var(--shadow-focus-ring);
+            border-color: rgb(var(--yellow-primary));
+        }
+
+        .alert {
+            border-radius: var(--radius-card);
+            border: none;
+            padding: var(--spacing-sm);
+        }
+
+        .alert-success {
+            background: rgba(var(--yellow-light), 0.2);
+            color: rgb(var(--yellow-dark));
+        }
+
+        .invalid-feedback {
+            font-size: 0.85rem;
+            margin-top: var(--spacing-xs);
+        }
+
+        a {
+            color: rgb(var(--yellow-dark));
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: rgb(var(--yellow-primary));
+        }
+
+        footer {
+            margin-top: auto;
+            background: rgb(var(--black));
+            color: white;
+            padding: 1.5rem 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 576px) {
+            .card {
+                border-radius: var(--radius-panel);
+            }
+        }

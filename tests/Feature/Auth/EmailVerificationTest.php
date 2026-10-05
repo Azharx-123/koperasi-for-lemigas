@@ -38,7 +38,10 @@ class EmailVerificationTest extends TestCase
 
         Event::assertDispatched(Verified::class);
         $this->assertTrue($user->fresh()->hasVerifiedEmail());
-        $response->assertRedirect(route('dashboard', absolute: false).'?verified=1');
+        // VerifyEmailController in this app redirects to route('welcome')
+        // rather than route('dashboard') — same reasoning as the login
+        // redirect: '/' is the real storefront home here.
+        $response->assertRedirect(route('welcome', absolute: false).'?verified=1');
     }
 
     public function test_email_is_not_verified_with_invalid_hash(): void

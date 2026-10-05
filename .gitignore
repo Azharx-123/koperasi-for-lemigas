@@ -1,23 +1,42 @@
-/.phpunit.cache
+# Dependencies (reinstall via composer install / npm install)
+/vendor
 /node_modules
+
+# Build output (regenerate via npm run build)
 /public/build
 /public/hot
+
+# Local environment & storage symlink (php artisan storage:link)
 /public/storage
-/storage/*.key
-/storage/pail
-/vendor
 .env
 .env.backup
 .env.production
-.phpactor.json
+.env.*.local
+
+# Framework runtime/cache — regenerated automatically, and the exact
+# reason this project keeps a .gitignore at all: a previous export of
+# this project shipped its local storage/logs/*.log files, which had
+# quietly recorded the developer's real machine path and the project's
+# original (non-KEP) internal name. None of this should ever reach a
+# public repo.
+/storage/*.key
+/storage/pail
+/bootstrap/cache/*.php
+/.phpunit.cache
 .phpunit.result.cache
+
+# IDE / OS
+/.idea
+/.vscode
+/.fleet
+/.nova
+/.zed
+.DS_Store
+Thumbs.db
+
+# Misc
 Homestead.json
 Homestead.yaml
+auth.json
 npm-debug.log
 yarn-error.log
-/auth.json
-/.fleet
-/.idea
-/.nova
-/.vscode
-/.zed

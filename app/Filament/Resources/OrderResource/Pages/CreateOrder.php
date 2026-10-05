@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\OrderResource\Pages;
 
 use App\Filament\Resources\OrderResource;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Str;
 
@@ -13,7 +12,7 @@ class CreateOrder extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['order_number'] = 'ORD-' . time() . '-' . ($data['user_id'] ?? 0);
+        $data['order_number'] = 'ORD-' . now()->format('YmdHis') . '-' . Str::random(6);
         return $data;
     }
 }

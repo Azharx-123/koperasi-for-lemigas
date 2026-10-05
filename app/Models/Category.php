@@ -45,13 +45,25 @@ class Category extends Model
         return $this->is_active ? 'Aktif' : 'Tidak Aktif';
     }
 
-    // Mutator untuk generate slug
+    // Mutator untuk generate slug + guard hapus kategori yang masih punya produk
     protected static function boot()
     {
         parent::boot();
-        
+
         static::creating(function ($category) {
             $category->slug = Str::slug($category->name);
+        });
+
+        // Cegah hapus kategori kalau masih ada produk di dalamnya.
+        // withTrashed() disengaja: constraint FK restrict di DB tetap menghitung
+        // baris produk yang soft-deleted (masih fisik ada di tabel), jadi guard
+        // ini harus konsisten sama apa yang bakal ditolak DB.
+        static::deleting(function ($category) {
+            if ($category->products()->withTrashed()->exists()) {
+                throw new \RuntimeException(
+                    'Kategori "' . $category->name . '" masih memiliki produk dan tidak bisa dihapus. Pindahkan atau hapus produknya terlebih dahulu.'
+                );
+            }
         });
     }
 

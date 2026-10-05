@@ -3,7 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CarouselItemResource\Pages;
-use App\Models\Carousel_item;
+use App\Models\CarouselItem;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -17,10 +17,10 @@ use Illuminate\Support\Facades\Storage;
 
 class CarouselItemResource extends Resource
 {
-    protected static ?string $model = Carousel_item::class;
+    protected static ?string $model = CarouselItem::class;
     protected static ?string $modelLabel = 'Carousel Items';
     protected static ?string $navigationIcon = 'heroicon-o-photo';
-    protected static ?string $navigationGroup = 'Website Management';
+    protected static ?string $navigationGroup = 'Content';
 
     public static function form(Form $form): Form
     {
@@ -37,7 +37,11 @@ class CarouselItemResource extends Resource
                     ->imageEditor()
                     ->directory('carousel')
                     ->visibility('public')
-                    ->disk('public'),
+                    ->disk('public')
+                    ->maxSize(10240) // 10MB raw cap; these are full-bleed hero images so allow a bit more before optimizeAndStore re-encodes them down
+                    ->saveUploadedFileUsing(
+                        fn ($file) => \App\Helpers\ImageHelper::optimizeAndStore($file, 'carousel', maxWidth: 2560, maxHeight: 2560, quality: 82)
+                    ),
                 Forms\Components\TextInput::make('order')
                     ->numeric()
                     ->default(0),
@@ -69,11 +73,11 @@ class CarouselItemResource extends Resource
                         Notification::make()
                             ->success()
                             ->title('Deleted')
-                            ->body('Post has been deleted successfully.')
+                            ->body('Carousel item has been deleted successfully.')
                     ),
                 Tables\Actions\ForceDeleteAction::make() // Untuk permanent delete
                     ->requiresConfirmation()
-                    ->before(function (Carousel_item $record) {
+                    ->before(function (CarouselItem $record) {
                         if ($record->image) {
                             Storage::disk('public')->delete($record->image);
                         }
@@ -82,14 +86,14 @@ class CarouselItemResource extends Resource
                         Notification::make()
                             ->success()
                             ->title('Deleted Permanently')
-                            ->body('Post has been permanently deleted.')
+                            ->body('Carousel item has been permanently deleted.')
                     ),
                 Tables\Actions\RestoreAction::make() // Untuk restore soft deleted items
                     ->successNotification(
                         Notification::make()
                             ->success()
                             ->title('Restored')
-                            ->body('Post has been restored successfully.')
+                            ->body('Carousel item has been restored successfully.')
                     ),
             ])
             ->defaultSort('order')

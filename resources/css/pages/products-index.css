@@ -1,0 +1,303 @@
+        /* Page-specific badge colors (blue/orange) that extend the shared
+           palette from layouts.app for category/status badges on this page.
+           Brand yellow now comes from the global --yellow-primary/-dark, no
+           longer overridden here, so it matches the rest of the site. */
+        :root {
+            --blue-badge: 13, 110, 253;
+            --orange-badge: 253, 126, 20;
+        }
+
+        /* Section Title */
+        .section-title-elegant {
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .elegant-separator {
+            height: 3px;
+            background: linear-gradient(90deg, transparent 0%, rgb(var(--yellow-primary)) 50%, transparent 100%);
+            width: min(150px, 80%);
+            margin: 2rem auto;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: rgb(var(--gray-100));
+            padding: clamp(2rem, 4vw, 4rem) 0;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .filter-card {
+            background: white;
+            border-radius: var(--radius-panel);
+            padding: clamp(1rem, 2vw, 1.5rem);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-input {
+            border: 2px solid rgb(var(--gray-200));
+            border-radius: var(--radius-card);
+            padding: 0.75rem 1rem;
+            transition: 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: rgb(var(--yellow-primary));
+            box-shadow: 0 0 0 3px rgba(var(--yellow-primary), 0.1);
+        }
+
+        /* Product Grid */
+        /* auto-fill (the previous value) always lays out as many column
+           TRACKS as fit the row — even empty ones — and 1fr then stretches
+           every one of those tracks, occupied or not. With few products
+           that pushes the actual cards flush against the left edge with a
+           big dead gap on the right. auto-fit collapses the empty tracks
+           instead, and justify-content: center then centers the remaining
+           (occupied) ones as a group; capping the column at 260px (rather
+           than letting 1fr stretch it) keeps each card its normal size
+           instead of ballooning to fill the freed-up space. */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 260px));
+            justify-content: center;
+            gap: var(--spacing-sm);
+            padding: 1rem 0;
+        }
+
+        .empty-products {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: clamp(3rem, 8vw, 5rem) 1rem;
+        }
+
+        .empty-products-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto var(--spacing-md);
+            border-radius: var(--radius-full);
+            background: rgb(var(--gray-100));
+            color: rgb(var(--gray-600));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+        }
+
+        .empty-products-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-products-text {
+            color: rgb(var(--gray-600));
+            margin-bottom: var(--spacing-md);
+        }
+
+        .product-card {
+            background: white;
+            border-radius: var(--radius-card);
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            transition: 0.3s ease;
+            min-height: 360px;
+            /* Memastikan tinggi minimum yang sama */
+        }
+
+        .product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .product-image-container {
+            position: relative;
+            padding-top: 70%;
+            /* Reduced height ratio */
+        }
+
+        .product-image {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.3s ease;
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+
+        .product-content {
+            padding: 0.8rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-category {
+            color: rgb(var(--gray-600));
+            font-size: 0.75rem;
+            margin-bottom: 0.3rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .product-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: var(--spacing-xs);
+            max-height: 4.2rem;
+            /* Approximately 3 lines */
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        .product-description {
+            display: none;
+            /* Hide description for smaller cards */
+        }
+
+        .product-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .badge-meta {
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.7rem;
+            font-weight: 500;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-hero);
+            gap: 0.25rem;
+        }
+
+        .badge-rating {
+            background-color: rgba(var(--orange-badge), 0.1);
+            color: rgb(var(--orange-badge));
+        }
+
+        .badge-sales {
+            background-color: rgba(var(--blue-badge), 0.1);
+            color: rgb(var(--blue-badge));
+        }
+
+        .product-price {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: rgb(var(--yellow-dark));
+            margin-bottom: var(--spacing-xs);
+        }
+
+        /* Sizing only — gradient, color, pill radius, etc. now come from the
+           shared .btn-cta base class in layouts.app so this matches the
+           "Checkout"/"Pesan Sekarang" buttons elsewhere on the site. */
+        .btn-product {
+            padding: 0.75rem 1.5rem;
+            transition: 0.3s ease;
+        }
+
+        .product-info {
+            flex: 1;
+        }
+
+        .product-data {
+            margin-top: var(--spacing-xs);
+        }
+
+        .btn-detail {
+            font-size: 0.85rem;
+            padding: 0.5rem 0;
+            border-radius: var(--radius-md);
+        }
+
+        .btn-product:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-yellow-glow);
+            color: white;
+        }
+
+        /* Responsive Form Grid */
+
+        /* Responsive Filter Card */
+        @media (max-width: 992px) {
+            .filter-card .row {
+                row-gap: var(--spacing-sm);
+            }
+
+            .filter-card [class*="col-"] {
+                width: 100%;
+            }
+
+            .filter-card .btn-product {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .filter-card .row {
+                row-gap: var(--spacing-sm);
+            }
+
+            .filter-card [class*="col-"] {
+                width: 100%;
+            }
+        }
+
+        /* Pagination — see resources/views/vendor/pagination/kep.blade.php.
+           Base pill/active/disabled colors already come from the shared
+           .pagination rules in app.css; this just handles the layout: a
+           centered column (summary text on top, page pills below) instead
+           of the old bare, left-leaning default. */
+        .kep-pagination {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-xl);
+        }
+
+        .kep-pagination-summary {
+            margin: 0;
+            font-size: 0.9rem;
+            color: rgb(var(--gray-600));
+        }
+
+        .kep-pagination-list {
+            justify-content: center;
+            margin: 0;
+        }
+
+        .kep-page-nav {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 2.75rem;
+        }
+
+        .kep-page-dots {
+            display: flex;
+            align-items: flex-end;
+        }
+
+        @media (max-width: 576px) {
+            .kep-pagination-list {
+                gap: 0.25rem;
+            }
+
+            .kep-pagination-list .page-link {
+                padding: 0.5rem 0.75rem;
+            }
+        }

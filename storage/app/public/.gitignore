@@ -1,2 +1,38 @@
 *
 !.gitignore
+
+# Only the specific demo assets below are tracked — anything else dropped
+# into these folders (e.g. test uploads made through the Filament admin
+# while developing locally) stays untracked by default. This is what kept
+# real test-upload files out of git before; new demo files must be added
+# here explicitly rather than switching to a blanket "!products/*" rule.
+!company/
+!company/logo.svg
+!company/office.svg
+
+!products/
+!products/01JM757EQ1ZWMEJQQME16DWT7Y.jpg
+!products/01JMA9VF6NN2SG0YT4J9VRZYFR.webp
+!products/01JMAATDB832D5GXJE2HVCM63X.webp
+!products/01JNARQY5Q7D8SR9AZ40JFWWR3.jpg
+!products/01JNASFMHSMD7ZRZG69TZ45787.webp
+!products/01JNAT4PCE58G3P6S3P9QBPZB2.webp
+!products/01JNATPWZX6C0CTMQC36NF8XHM.webp
+!products/01JNAVZKHBV6Q8HP7Q7DQK292C.webp
+
+!sponsors/
+!sponsors/sponsor-nusantara-energi.svg
+!sponsors/sponsor-mitra-tambang.svg
+!sponsors/sponsor-cipta-daya.svg
+!sponsors/sponsor-sentosa-mineral.svg
+!sponsors/sponsor-prima-teknik.svg
+!sponsors/sponsor-bumi-makmur.svg
+
+!carousel/
+!carousel/01JMEA06Y048MT4X6K9HRWTXPD.jpg
+!carousel/01JKWG5H21NJ3Q06QMZ0WNQCWK.jpg
+!carousel/01JKGNHQ0YJR9TQC72PDHZ7E97.jpg
+!carousel/01JMED5V7VRFW44ANG5H4V9K8Z.jpg
+!carousel/01JKWG4DJ1VKDM2W3MNCGD8353.jpg
+!carousel/01JMA86SVCFMW8702H1HNBT797.jpg
+

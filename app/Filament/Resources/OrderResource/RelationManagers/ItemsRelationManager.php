@@ -8,7 +8,6 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ItemsRelationManager extends RelationManager
 {
@@ -21,11 +20,25 @@ class ItemsRelationManager extends RelationManager
                 Forms\Components\Select::make('product_id')
                     ->relationship('product', 'name')
                     ->required()
-                    ->searchable(),
+                    ->searchable()
+                    ->live(),
                 Forms\Components\TextInput::make('quantity')
                     ->required()
                     ->numeric()
-                    ->minValue(1),
+                    ->minValue(1)
+                    ->live(onBlur: true)
+                    // Warning, not a hard block — same reasoning as
+                    // OrderItemResource.
+                    ->hint(function (callable $get): ?string {
+                        $product = \App\Models\Product::find($get('product_id'));
+                        if (!$product || !$get('quantity')) {
+                            return null;
+                        }
+                        return $get('quantity') > $product->stock
+                            ? "Melebihi stok tersedia ({$product->stock})"
+                            : null;
+                    })
+                    ->hintColor('danger'),
                 Forms\Components\TextInput::make('price')
                     ->required()
                     ->numeric()
@@ -44,22 +57,24 @@ class ItemsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('id')
             ->columns([
-                Tables\Columns\TextColumn::make('product.name')
+                Tables\Columns\TextColumn::make('display_name')
                     ->label('Product')
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(query: fn (Builder $query, string $search): Builder => $query
+                        ->where('product_name', 'like', "%{$search}%")
+                        ->orWhereHas('product', fn (Builder $q) => $q->where('name', 'like', "%{$search}%")))
+                    ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderBy('product_name', $direction)),
                 Tables\Columns\TextColumn::make('quantity')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('formattedPrice')
+                Tables\Columns\TextColumn::make('price')
                     ->label('Price')
+                    ->money('IDR')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('formattedTotal')
+                Tables\Columns\TextColumn::make('total')
                     ->label('Total')
+                    ->money('IDR')
                     ->sortable(),
             ])
-            ->filters([
-                //
-            ])
+            ->filters([])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
                     ->mutateFormDataUsing(function (array $data): array {

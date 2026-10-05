@@ -2,13 +2,12 @@
 
 namespace App\Filament\Resources\CartResource\RelationManagers;
 
+use App\Helpers\CurrencyHelper;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ProductsRelationManager extends RelationManager
 {
@@ -46,24 +45,19 @@ class ProductsRelationManager extends RelationManager
                     ->sortable(),
                 Tables\Columns\TextColumn::make('pivot.price')
                     ->label('Price')
-                    ->formatStateUsing(fn($state): string => 'Rp ' . number_format($state, 0, ',', '.'))
+                    ->formatStateUsing(fn($state): string => CurrencyHelper::formatRupiah($state))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('subtotal')
                     ->label('Subtotal')
-                    ->getStateUsing(fn($record): string => 'Rp ' . number_format($record->pivot->price * $record->pivot->quantity, 0, ',', '.')),
+                    ->getStateUsing(fn($record): string => CurrencyHelper::formatRupiah($record->pivot->price * $record->pivot->quantity)),
                 Tables\Columns\TextColumn::make('pivot.created_at')
                     ->label('Added At')
                     ->dateTime('d M Y H:i')
                     ->sortable(),
             ])
-            ->filters([
-                //
-            ])
-            ->headerActions([
-                Tables\Actions\CreateAction::make(),
-            ])
+            ->filters([])
+            ->headerActions([])
             ->actions([
-                Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

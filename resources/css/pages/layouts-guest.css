@@ -1,0 +1,16 @@
+        .guest-layout-wrapper {
+            min-height: calc(100vh - 400px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(2rem, 5vw, 4rem) 1rem;
+        }
+
+        .guest-card {
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            border-radius: var(--radius-panel);
+            padding: clamp(1.5rem, 4vw, 2.5rem);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }

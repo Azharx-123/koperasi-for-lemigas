@@ -17,7 +17,7 @@
             </div>
             <div class="rating-count">{{ $product->rating_count }} ulasan</div>
         </div>
-        
+
         <div class="rating-distribution">
             @php
                 $ratingCounts = DB::table('ratings')
@@ -29,10 +29,10 @@
                     ->get()
                     ->pluck('count', 'score')
                     ->toArray();
-                
+
                 $maxCount = max($ratingCounts ?: [0]);
             @endphp
-            
+
             @for ($i = 5; $i >= 1; $i--)
                 <div class="rating-bar">
                     <div class="rating-label">{{ $i }} <i class="fas fa-star"></i></div>
@@ -44,7 +44,7 @@
             @endfor
         </div>
     </div>
-    
+
     <div class="rating-filter">
         <a href="{{ route('ratings.index', $product) }}" class="btn-filter-rating {{ !request()->has('filter') ? 'active' : '' }}">
             Semua Ulasan
@@ -57,100 +57,106 @@
 
 <style>
     .ratings-display {
-        margin-bottom: 2rem;
+        margin-bottom: var(--spacing-lg);
     }
-    
+
     .rating-summary {
         display: flex;
-        gap: 2rem;
-        margin-bottom: 1.5rem;
+        gap: var(--spacing-lg);
+        margin-bottom: var(--spacing-md);
     }
-    
+
     .rating-average {
         text-align: center;
-        padding: 1.5rem;
+        padding: var(--spacing-md);
         background-color: rgba(var(--yellow-primary), 0.05);
-        border-radius: 15px;
+        border-radius: var(--radius-panel);
         min-width: 200px;
     }
-    
+
     .average-score {
         font-size: 3rem;
         font-weight: 700;
         color: rgb(var(--yellow-dark));
     }
-    
+
     .average-stars {
         color: rgb(var(--yellow-primary));
         font-size: 1.5rem;
         margin: 0.5rem 0;
     }
-    
+
     .rating-count {
         color: rgb(var(--gray-600));
     }
-    
+
     .rating-distribution {
         flex: 1;
-        padding-top: 1rem;
+        padding-top: var(--spacing-sm);
     }
-    
+
     .rating-bar {
         display: flex;
         align-items: center;
         margin-bottom: 0.75rem;
     }
-    
+
     .rating-label {
         min-width: 70px;
         color: rgb(var(--gray-800));
     }
-    
+
     .progress {
         flex: 1;
         height: 12px;
         background-color: rgb(var(--gray-200));
-        border-radius: 10px;
+        border-radius: var(--radius-card);
         margin: 0 1rem;
         overflow: hidden;
     }
-    
+
     .progress-bar {
         height: 100%;
-        border-radius: 10px;
+        border-radius: var(--radius-card);
         transition: width 0.5s ease;
     }
-    
+
     .rating-filter {
         display: flex;
-        gap: 1rem;
-        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-lg);
     }
-    
+
     .btn-filter-rating {
         padding: 0.5rem 1.5rem;
-        border-radius: 50px;
+        border-radius: var(--radius-pill);
         border: 2px solid rgb(var(--gray-300));
         color: rgb(var(--gray-800));
         font-weight: 500;
         transition: all 0.3s ease;
         text-decoration: none;
     }
-    
+
     .btn-filter-rating:hover, .btn-filter-rating.active {
         background-color: rgb(var(--yellow-primary));
         border-color: rgb(var(--yellow-primary));
         color: rgb(var(--black));
     }
-    
+
     @media (max-width: 768px) {
         .rating-summary {
             flex-direction: column;
-            gap: 1rem;
+            gap: var(--spacing-sm);
         }
-        
+
         .rating-average {
             min-width: auto;
+        }
+
+        .btn-filter-rating {
+            padding: 0.4rem 1rem;
+            font-size: 0.9rem;
         }
     }
 </style>

@@ -1,16 +1,4 @@
 <style>
- :root {
-            --yellow-primary: 255, 215, 0;
-            --yellow-light: 255, 229, 92;
-            --yellow-dark: 178, 151, 0;
-            --gray-100: 248, 249, 250;
-            --gray-200: 233, 236, 239;
-            --gray-300: 222, 226, 230;
-            --gray-600: 108, 117, 125;
-            --gray-800: 52, 58, 64;
-            --black: 33, 37, 41;
-        }
-
 .footer-section {
     position: relative;
     background: linear-gradient(135deg, rgb(var(--gray-800)) 0%, rgb(var(--black)) 100%);
@@ -23,7 +11,7 @@
     font-size: 1.2rem;
     color: rgb(var(--gray-100));
     position: relative;
-    padding-bottom: 0.5rem;
+    padding-bottom: var(--spacing-xs);
 }
 
 .footer-title::after {
@@ -44,7 +32,7 @@
 
 .social-links {
     display: flex;
-    gap: 1rem;
+    gap: var(--spacing-sm);
 }
 
 .social-link {
@@ -55,7 +43,7 @@
     height: 36px;
     background: rgba(var(--gray-100), 0.1);
     color: rgb(var(--gray-100));
-    border-radius: 50%;
+    border-radius: var(--radius-full);
     transition: all 0.3s ease;
 }
 
@@ -96,8 +84,8 @@
 .footer-contact li {
     display: flex;
     align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 1rem;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
     color: rgb(var(--gray-300));
     font-size: 0.95rem;
 }
@@ -105,28 +93,6 @@
 .footer-contact i {
     color: rgb(var(--yellow-primary));
     margin-top: 5px;
-}
-
-.newsletter-form .form-control {
-    background: rgba(var(--gray-800), 0.5);
-    border: 1px solid rgba(var(--gray-600), 0.3);
-    color: rgb(var(--gray-100));
-    padding: 0.6rem 1rem;
-}
-
-.newsletter-form .form-control::placeholder {
-    color: rgb(var(--gray-300));
-}
-
-.newsletter-form .btn {
-    padding: 0.6rem 1.2rem;
-    background: linear-gradient(90deg, rgb(var(--yellow-primary)), rgb(var(--yellow-light)));
-    border: none;
-    color: rgb(var(--black));
-}
-
-.newsletter-form .btn:hover {
-    background: linear-gradient(90deg, rgb(var(--yellow-light)), rgb(var(--yellow-primary)));
 }
 
 .footer-divider {
@@ -145,7 +111,7 @@
     margin: 0;
     display: flex;
     justify-content: flex-end;
-    gap: 2rem;
+    gap: var(--spacing-lg);
 }
 
 .footer-bottom-links a {
@@ -162,13 +128,13 @@
 @media (max-width: 768px) {
     .footer-bottom-links {
         justify-content: flex-start;
-        margin-top: 1rem;
+        margin-top: var(--spacing-sm);
     }
-    
+
     .copyright {
         text-align: center;
     }
-    
+
     .footer-bottom-links {
         justify-content: center;
     }
@@ -184,7 +150,7 @@
                 <div class="footer-widget">
                     <h5 class="footer-title mb-4">{{ $company->name }}</h5>
                     <p class="footer-description mb-4">
-                        Pusat Penelitian dan Pengembangan Teknologi Minyak dan Gas Bumi yang berfokus pada inovasi dan pengembangan teknologi untuk masa depan industri migas.
+                        {{ $company->description }}
                     </p>
                     <div class="social-links">
                         <a href="#" class="social-link" title="Facebook">
@@ -204,21 +170,21 @@
             </div>
 
             <!-- Quick Links -->
-            <div class="col-lg-2 col-md-6">
+            <div class="col-lg-3 col-md-6">
                 <div class="footer-widget">
                     <h5 class="footer-title mb-4">Tautan Cepat</h5>
                     <ul class="footer-links">
-                        <li><a href="#beranda">Beranda</a></li>
-                        <li><a href="#tentang">Tentang Kami</a></li>
-                        <li><a href="#produk">Produk</a></li>
-                        <li><a href="#kategori">Kategori</a></li>
-                        <li><a href="#persona">Layanan</a></li>
+                        <li><a href="{{ route('welcome') }}">Beranda</a></li>
+                        <li><a href="{{ route('about') }}">Tentang Kami</a></li>
+                        <li><a href="{{ route('products.index') }}">Produk</a></li>
+                        <li><a href="{{ route('products.index') }}">Kategori</a></li>
+                        <li><a href="{{ route('welcome') }}#persona-section">Layanan</a></li>
                     </ul>
                 </div>
             </div>
 
             <!-- Contact Info -->
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-5 col-md-6">
                 <div class="footer-widget">
                     <h5 class="footer-title mb-4">Kontak Kami</h5>
                     <ul class="footer-contact">
@@ -235,22 +201,6 @@
                             <span>{{ $company->email }}</span>
                         </li>
                     </ul>
-                </div>
-            </div>
-
-            <!-- Newsletter -->
-            <div class="col-lg-3 col-md-6">
-                <div class="footer-widget">
-                    <h5 class="footer-title mb-4">Newsletter</h5>
-                    <p class="mb-4">Berlangganan newsletter kami untuk mendapatkan informasi terbaru</p>
-                    <form class="newsletter-form">
-                        <div class="input-group">
-                            <input type="email" class="form-control" placeholder="Email Anda" required>
-                            <button class="btn btn-primary" type="submit">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>
